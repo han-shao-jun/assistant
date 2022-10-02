@@ -19,7 +19,6 @@ find_package(Qt5 COMPONENTS
         Bluetooth
         REQUIRED)
 
-include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${PROJECT_NAME}/)
 
 FILE(GLOB_RECURSE SRC
@@ -41,7 +40,7 @@ target_link_libraries(${PROJECT_NAME}
         Qt5::Charts
         Qt5::PrintSupport
         Qt5::Bluetooth
-        )
+)
 
 if (WIN32)
     set(DEBUG_SUFFIX)
