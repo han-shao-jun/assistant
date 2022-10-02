@@ -2,4 +2,4 @@
     包含串口助手、PID调试助手、网络调试助手、摄像头调试助手、蓝牙调试助手、下载器
 
 ## 构建指南
-    使用了cmake管理项目，方便跨平台构建项目，在构建时在CmakeList.txt将CMAKE_PREFIX_PATH修改为自己的安装目录
+    使用了cmake管理项目，方便跨平台构建项目，在构建时在CmakeList.txt中将CMAKE_PREFIX_PATH修改为自己的安装目录
