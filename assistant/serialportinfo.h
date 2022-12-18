@@ -24,7 +24,7 @@ public:
     void registerUsingSerialPort(const QString& comport);
     bool unregisterUsingSerialPort(const QString& comport);
     static QStringList availablePorts();
-signals:
+Q_SIGNALS:
     void update(const QStringList& ports);
     void disconnected(const QString& port);
 

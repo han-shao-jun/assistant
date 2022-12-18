@@ -2,10 +2,10 @@
 #define WIDGET_H
 
 #include <QWidget>
-#include "uart.h"
+
 #include <QThread>
 #include <QMessageBox>
-#include "network.h"
+
 #include <QTimer>
 #include <QMap>
 #include <QStringList>
@@ -15,10 +15,12 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
-#include <QTextCodec>
 #include <QFileDialog>
-#include "serialportinfo.h"
+#include <QVector>
+#include "uart.h"
 #include "pid.h"
+#include "network.h"
+#include "serialportinfo.h"
 #include "download.h"
 
 
@@ -36,12 +38,12 @@ namespace PID_MASTER
 {
     enum CMD : quint8
     {
-        Target = 0x01,   //设置下位机通道的目标值(1个int类型)
-        Reset  = 0x02,   //设置下位机复位指令
-        Param  = 0x03,   //设置下位机PID值(3个，P、I、D，float类型)
-        Start  = 0x04,   //设置下位机启动指令
-        Stop   = 0x05,   //设置下位机停止指令
-        Cycle  = 0x06,   //设置下位机周期(int类型)
+        Target = 0x01u,   //设置下位机通道的目标值(1个int类型)
+        Reset  = 0x02u,   //设置下位机复位指令
+        Param  = 0x03u,   //设置下位机PID值(3个，P、I、D，float类型)
+        Start  = 0x04u,   //设置下位机启动指令
+        Stop   = 0x05u,   //设置下位机停止指令
+        Cycle  = 0x06u,   //设置下位机周期(int类型)
     };
 }
 
@@ -52,12 +54,12 @@ namespace PID_SLAVE
 {
     enum CMD : quint8
     {
-        Target = 0x01,   //设置上位机通道的目标值(1个int类型)
-        Actual = 0x02,   //设置上位机通道实际值
-        Param  = 0x03,   //设置上位机PID值(3个，P、I、D，float类型)
-        Start  = 0x04,   //设置上位机启动指令(同步上位机的按钮状态)
-        Stop   = 0x05,   //设置上位机停止指令(同步上位机的按钮状态)
-        Cycle  = 0x06,   //设置上位机周期(1个int类型)
+        Target = 0x01u,   //设置上位机通道的目标值(1个int类型)
+        Actual = 0x02u,   //设置上位机通道实际值
+        Param  = 0x03u,   //设置上位机PID值(3个，P、I、D，float类型)
+        Start  = 0x04u,   //设置上位机启动指令(同步上位机的按钮状态)
+        Stop   = 0x05u,   //设置上位机停止指令(同步上位机的按钮状态)
+        Cycle  = 0x06u,   //设置上位机周期(1个int类型)
     };
 }
 
@@ -73,7 +75,7 @@ public:
     static void HexQString_to_QString(QString& source);
     static void QByteArray_to_HexQByteArray(QByteArray& source);
 
-signals:
+Q_SIGNALS:
     void startUartThread(const QStringList &config);
     void closeUartThread();
     void sendUartDateSignal(const QByteArray& sendText);

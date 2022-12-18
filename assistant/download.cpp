@@ -11,8 +11,7 @@ Download::Download(QObject *parent) : QThread(parent)
     });
 }
 
-Download::~Download()
-= default;
+Download::~Download() = default;
 
 /**
  * @brief 接收主线程下载通信配置
@@ -25,7 +24,7 @@ void Download::recConfig(const QStringList& config)
     type = config[0];
     cmd = config[1];
 
-    if (type == QString("isp"))
+    if (type == QString("isp")) //ISP串口下载
     {
         flowControl = config[2];
         port->setPortName(config[3].section(':', 0, 0));
@@ -62,7 +61,7 @@ void Download::run()
 
         }
     }
-    port->close();
+    // port->close();
 }
 
 

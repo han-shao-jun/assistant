@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1020</width>
-    <height>674</height>
+    <width>969</width>
+    <height>817</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -21,7 +21,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <property name="spacing">
-    <number>6</number>
+    <number>0</number>
    </property>
    <property name="leftMargin">
     <number>0</number>
@@ -151,25 +151,10 @@
    <item>
     <widget class="QStackedWidget" name="mainWidget">
      <property name="currentIndex">
-      <number>5</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="uartPage">
       <layout class="QGridLayout" name="gridLayout_4">
-       <property name="leftMargin">
-        <number>9</number>
-       </property>
-       <property name="topMargin">
-        <number>9</number>
-       </property>
-       <property name="rightMargin">
-        <number>9</number>
-       </property>
-       <property name="bottomMargin">
-        <number>9</number>
-       </property>
-       <property name="spacing">
-        <number>6</number>
-       </property>
        <item row="0" column="0" rowspan="2">
         <widget class="QWidget" name="uartConfigWidget" native="true">
          <property name="enabled">
@@ -198,7 +183,7 @@
            <number>0</number>
           </property>
           <property name="rightMargin">
-           <number>9</number>
+           <number>0</number>
           </property>
           <property name="bottomMargin">
            <number>0</number>
@@ -462,7 +447,7 @@
            <widget class="QGroupBox" name="uartRecGroup">
             <property name="maximumSize">
              <size>
-              <width>185</width>
+              <width>16777215</width>
               <height>16777215</height>
              </size>
             </property>
@@ -470,6 +455,12 @@
              <string>接收区配置</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_3">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
              <property name="verticalSpacing">
               <number>9</number>
              </property>
@@ -586,58 +577,14 @@
             </property>
             <layout class="QGridLayout" name="gridLayout_13">
              <property name="leftMargin">
-              <number>9</number>
+              <number>0</number>
              </property>
              <property name="rightMargin">
-              <number>9</number>
+              <number>0</number>
              </property>
              <property name="spacing">
               <number>9</number>
              </property>
-             <item row="2" column="3">
-              <widget class="QLabel" name="uartSendCycleMsLabel">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>21</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>ms</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="2" colspan="2">
-              <widget class="QCheckBox" name="uartSendAutoBtn">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>91</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>91</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>自动发送</string>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="0">
               <widget class="QRadioButton" name="uartSendAsciiBtn">
                <property name="minimumSize">
@@ -660,8 +607,8 @@
                </property>
               </widget>
              </item>
-             <item row="2" column="0" colspan="2">
-              <widget class="QLabel" name="uartSendCycleLabel">
+             <item row="2" column="3">
+              <widget class="QLabel" name="uartSendCycleMsLabel">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -670,34 +617,12 @@
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>90</width>
+                 <width>21</width>
                  <height>16777215</height>
                 </size>
                </property>
                <property name="text">
-                <string>自动发送周期</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="2">
-              <widget class="QLineEdit" name="uartSendCycleEdit">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>60</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>1000</string>
+                <string>ms</string>
                </property>
               </widget>
              </item>
@@ -739,6 +664,72 @@
                </property>
               </widget>
              </item>
+             <item row="1" column="2" colspan="2">
+              <widget class="QCheckBox" name="uartSendAutoBtn">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>91</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>91</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>自动发送</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0" colspan="2">
+              <widget class="QLabel" name="uartSendCycleLabel">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>发送周期</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QLineEdit" name="uartSendCycleEdit">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>1000</string>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>
@@ -770,39 +761,6 @@ p, li { white-space: pre-wrap; }
          <property name="verticalSpacing">
           <number>6</number>
          </property>
-         <item row="0" column="0" rowspan="4">
-          <widget class="QTextEdit" name="uartSendText">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>160</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>203</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QPushButton" name="uartSendClearBtn">
-           <property name="text">
-            <string>清除</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QPushButton" name="uartSendBtn">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>发送</string>
-           </property>
-          </widget>
-         </item>
          <item row="3" column="1">
           <spacer name="uartSendVerticalSpacer1">
            <property name="orientation">
@@ -819,10 +777,43 @@ p, li { white-space: pre-wrap; }
            </property>
           </spacer>
          </item>
+         <item row="0" column="1">
+          <widget class="QPushButton" name="uartSendBtn">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>发送</string>
+           </property>
+          </widget>
+         </item>
          <item row="1" column="1">
           <widget class="QPushButton" name="uartSendFileBtn">
            <property name="text">
             <string>选择文件</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="uartSendClearBtn">
+           <property name="text">
+            <string>清除</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" rowspan="4">
+          <widget class="QTextEdit" name="uartSendText">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>160</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>203</height>
+            </size>
            </property>
           </widget>
          </item>
@@ -834,6 +825,12 @@ p, li { white-space: pre-wrap; }
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0" rowspan="2">
         <widget class="QWidget" name="pidConfigWidget" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>195</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>200</width>
@@ -844,7 +841,13 @@ p, li { white-space: pre-wrap; }
           <property name="spacing">
            <number>0</number>
           </property>
+          <property name="leftMargin">
+           <number>9</number>
+          </property>
           <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
            <number>0</number>
           </property>
           <property name="bottomMargin">
@@ -877,6 +880,12 @@ p, li { white-space: pre-wrap; }
              <string>串口配置</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_12">
+             <property name="leftMargin">
+              <number>9</number>
+             </property>
+             <property name="rightMargin">
+              <number>9</number>
+             </property>
              <property name="verticalSpacing">
               <number>9</number>
              </property>
@@ -1109,7 +1118,7 @@ p, li { white-space: pre-wrap; }
            <widget class="QGroupBox" name="pidConfig">
             <property name="maximumSize">
              <size>
-              <width>185</width>
+              <width>16777215</width>
               <height>16777215</height>
              </size>
             </property>
@@ -1117,6 +1126,12 @@ p, li { white-space: pre-wrap; }
              <string>PID发送</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_6">
+             <property name="leftMargin">
+              <number>9</number>
+             </property>
+             <property name="rightMargin">
+              <number>9</number>
+             </property>
              <item row="0" column="0">
               <widget class="QLabel" name="pidChannel">
                <property name="text">
@@ -1269,9 +1284,15 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="7" column="0" colspan="2">
               <widget class="QPushButton" name="pidSendTargetBtn">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="minimumSize">
                 <size>
-                 <width>80</width>
+                 <width>75</width>
                  <height>0</height>
                 </size>
                </property>
@@ -1282,9 +1303,15 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="7" column="2">
               <widget class="QPushButton" name="pidSendCycleBtn">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="minimumSize">
                 <size>
-                 <width>0</width>
+                 <width>75</width>
                  <height>0</height>
                 </size>
                </property>
@@ -1295,6 +1322,18 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="8" column="0" colspan="2">
               <widget class="QPushButton" name="pidStartBtn">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>75</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>启动</string>
                </property>
@@ -1302,6 +1341,18 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="8" column="2">
               <widget class="QPushButton" name="pidResetBtn">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>75</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>复位</string>
                </property>
@@ -1329,6 +1380,12 @@ p, li { white-space: pre-wrap; }
              <string>显示区命令</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_11">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
              <item row="0" column="0">
               <widget class="QLabel" name="pidLineLabel">
                <property name="minimumSize">
@@ -1541,84 +1598,6 @@ p, li { white-space: pre-wrap; }
        </size>
       </property>
       <layout class="QGridLayout" name="gridLayout_5">
-       <property name="leftMargin">
-        <number>9</number>
-       </property>
-       <property name="rightMargin">
-        <number>9</number>
-       </property>
-       <property name="bottomMargin">
-        <number>9</number>
-       </property>
-       <property name="spacing">
-        <number>6</number>
-       </property>
-       <item row="1" column="1">
-        <layout class="QGridLayout" name="gridLayout_10">
-         <property name="horizontalSpacing">
-          <number>0</number>
-         </property>
-         <property name="verticalSpacing">
-          <number>6</number>
-         </property>
-         <item row="1" column="1">
-          <widget class="QPushButton" name="netSendFileBtn">
-           <property name="text">
-            <string>选择文件</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" rowspan="4">
-          <widget class="QTextEdit" name="netSendText">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>160</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>203</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <spacer name="netSendverticalSpacer1">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Maximum</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>58</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="0" column="1">
-          <widget class="QPushButton" name="netSendBtn">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>发送</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QPushButton" name="netSendClearBtn">
-           <property name="text">
-            <string>清除</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
        <item row="0" column="0" rowspan="2">
         <widget class="QWidget" name="netConfigWidget" native="true">
          <property name="minimumSize">
@@ -1644,7 +1623,7 @@ p, li { white-space: pre-wrap; }
            <number>0</number>
           </property>
           <property name="rightMargin">
-           <number>9</number>
+           <number>0</number>
           </property>
           <property name="bottomMargin">
            <number>0</number>
@@ -1664,6 +1643,12 @@ p, li { white-space: pre-wrap; }
              <string>通信配置</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
              <item row="0" column="0" colspan="2">
               <widget class="QLabel" name="netProtocolLabel">
                <property name="text">
@@ -1757,7 +1742,7 @@ p, li { white-space: pre-wrap; }
            <widget class="QGroupBox" name="netRecGroup">
             <property name="maximumSize">
              <size>
-              <width>185</width>
+              <width>16777215</width>
               <height>16777215</height>
              </size>
             </property>
@@ -1765,6 +1750,12 @@ p, li { white-space: pre-wrap; }
              <string>接收区配置</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_8">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
              <item row="0" column="0">
               <widget class="QRadioButton" name="netRecAsciiBtn">
                <property name="maximumSize">
@@ -1821,7 +1812,7 @@ p, li { white-space: pre-wrap; }
               <widget class="QPushButton" name="netRecClearBtn">
                <property name="maximumSize">
                 <size>
-                 <width>81</width>
+                 <width>16777215</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -1840,7 +1831,7 @@ p, li { white-space: pre-wrap; }
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>81</width>
+                 <width>16777215</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -1877,6 +1868,12 @@ p, li { white-space: pre-wrap; }
              <string>发送区配置</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_9">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
              <item row="2" column="3">
               <widget class="QLabel" name="netSendCycleMsLabel">
                <property name="sizePolicy">
@@ -1958,7 +1955,7 @@ p, li { white-space: pre-wrap; }
                 </size>
                </property>
                <property name="text">
-                <string>自动发送周期</string>
+                <string>发送周期</string>
                </property>
               </widget>
              </item>
@@ -2045,23 +2042,110 @@ p, li { white-space: pre-wrap; }
          </property>
         </widget>
        </item>
+       <item row="1" column="1">
+        <layout class="QGridLayout" name="gridLayout_10">
+         <property name="horizontalSpacing">
+          <number>0</number>
+         </property>
+         <property name="verticalSpacing">
+          <number>6</number>
+         </property>
+         <item row="1" column="1">
+          <widget class="QPushButton" name="netSendFileBtn">
+           <property name="text">
+            <string>选择文件</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" rowspan="4">
+          <widget class="QTextEdit" name="netSendText">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>160</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>203</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <spacer name="netSendverticalSpacer1">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Maximum</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>58</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="1">
+          <widget class="QPushButton" name="netSendBtn">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>发送</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="netSendClearBtn">
+           <property name="text">
+            <string>清除</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="cameraPage"/>
      <widget class="QWidget" name="cluetoothPage"/>
      <widget class="QWidget" name="dowPage">
-      <layout class="QGridLayout" name="gridLayout_17">
+      <layout class="QGridLayout" name="gridLayout_18">
        <item row="0" column="0">
         <widget class="QWidget" name="dowFileWidget" native="true">
          <property name="maximumSize">
           <size>
-           <width>420</width>
+           <width>460</width>
            <height>16777215</height>
           </size>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
            <widget class="QLabel" name="dowFileLabel">
+            <property name="minimumSize">
+             <size>
+              <width>25</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
               <width>30</width>
@@ -2071,11 +2155,11 @@ p, li { white-space: pre-wrap; }
             <property name="font">
              <font>
               <family>Arial</family>
-              <pointsize>11</pointsize>
+              <pointsize>9</pointsize>
              </font>
             </property>
             <property name="text">
-             <string>文件</string>
+             <string>固件</string>
             </property>
            </widget>
           </item>
@@ -2089,7 +2173,7 @@ p, li { white-space: pre-wrap; }
             </property>
             <property name="maximumSize">
              <size>
-              <width>341</width>
+              <width>16777215</width>
               <height>16777215</height>
              </size>
             </property>
@@ -2097,9 +2181,15 @@ p, li { white-space: pre-wrap; }
           </item>
           <item>
            <widget class="QToolButton" name="dowFileBtn">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>25</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
-              <width>21</width>
+              <width>28</width>
               <height>16777215</height>
              </size>
             </property>
@@ -2118,7 +2208,7 @@ p, li { white-space: pre-wrap; }
         <widget class="QTabWidget" name="tabWidget">
          <property name="maximumSize">
           <size>
-           <width>420</width>
+           <width>460</width>
            <height>16777215</height>
           </size>
          </property>
@@ -2129,8 +2219,23 @@ p, li { white-space: pre-wrap; }
           <attribute name="title">
            <string>STM32-ISP</string>
           </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <item>
+          <layout class="QGridLayout" name="gridLayout_17">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>9</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <item row="0" column="0">
             <widget class="QGroupBox" name="dowIspConfig">
              <property name="title">
               <string>通信配置</string>
@@ -2141,11 +2246,11 @@ p, li { white-space: pre-wrap; }
                 <property name="font">
                  <font>
                   <family>Arial</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>9</pointsize>
                  </font>
                 </property>
                 <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;端口&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;端口&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                </widget>
               </item>
@@ -2167,7 +2272,7 @@ p, li { white-space: pre-wrap; }
                  </font>
                 </property>
                 <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;波特率&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;波特率&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                </widget>
               </item>
@@ -2216,7 +2321,7 @@ p, li { white-space: pre-wrap; }
                 <property name="font">
                  <font>
                   <family>Arial</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>9</pointsize>
                  </font>
                 </property>
                 <property name="text">
@@ -2296,11 +2401,11 @@ p, li { white-space: pre-wrap; }
              </layout>
             </widget>
            </item>
-           <item>
+           <item row="1" column="0">
             <widget class="QGroupBox" name="dowIspCmd">
              <property name="maximumSize">
               <size>
-               <width>231</width>
+               <width>240</width>
                <height>16777215</height>
               </size>
              </property>
@@ -2338,7 +2443,7 @@ p, li { white-space: pre-wrap; }
              </layout>
             </widget>
            </item>
-           <item>
+           <item row="2" column="0">
             <spacer name="verticalSpacer_3">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -2346,7 +2451,7 @@ p, li { white-space: pre-wrap; }
              <property name="sizeHint" stdset="0">
               <size>
                <width>20</width>
-               <height>404</height>
+               <height>355</height>
               </size>
              </property>
             </spacer>
@@ -2358,9 +2463,19 @@ p, li { white-space: pre-wrap; }
            <string>STM32-IAP</string>
           </attribute>
          </widget>
-         <widget class="QWidget" name="STM32OCD">
+         <widget class="QWidget" name="OpenOCD">
           <attribute name="title">
            <string>OpenOCD</string>
+          </attribute>
+         </widget>
+         <widget class="QWidget" name="JLink">
+          <attribute name="title">
+           <string>J-Link</string>
+          </attribute>
+         </widget>
+         <widget class="QWidget" name="STLink">
+          <attribute name="title">
+           <string>ST-Link</string>
           </attribute>
          </widget>
         </widget>

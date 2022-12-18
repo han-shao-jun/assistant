@@ -4,3 +4,4 @@ build/
 cmake-build-debug/
 *.pro.user
 *.pro.user.*
+cmake-build-release/

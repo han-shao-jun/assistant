@@ -25,7 +25,7 @@ Widget::Widget(QWidget *parent)
     pidChannel[3] = new PidParam_t;
     pidChannel[0]->isDisplayActual = true;
 
-    /**************新建PID线程*********************************/
+    /**************新建PID页面线程*********************************/
     pidThread = new Pid();
     connect(this, &Widget::startPidThread, pidThread, &Pid::recConfig);  //主线程启动串口线程
     connect(this, &Widget::closePidThread, pidThread, &Pid::close);      //主线程结束串口线程
@@ -33,7 +33,7 @@ Widget::Widget(QWidget *parent)
     connect(pidThread, &Pid::msgSignal, this, &Widget::pidMsgHandle);    //主线程接收串口线程数据
 
 
-    /***********新建网络通信线程**********************************/
+    /***********新建网络通信页面线程**********************************/
     netThread = new Network();
     connect(this, &Widget::startNetThread, netThread, &Network::recConfig); //主线程启动网络通信线程
     connect(this, &Widget::closeNetThread, netThread, &Network::close);     //主线程结束网络通信线程
@@ -41,7 +41,7 @@ Widget::Widget(QWidget *parent)
     connect(netThread, &Network::msgSignal, this, &Widget::netMsgHandle);   //主线程接收网络通信线程数据
 
 
-    /***********新建下载线程**********************************/
+    /***********新建下载页面线程**********************************/
      dowThread = new Download();
      connect(this, &Widget::startDowThread, dowThread, &Download::recConfig); //主线程启动下载线程
      connect(this, &Widget::closeDowThread, dowThread, &Download::close);     //主线程结束下载线程
@@ -130,7 +130,7 @@ Widget::~Widget()
 }
 
 /**
- * @brief 菜单初始化
+ * @brief 菜单栏初始化
  */
 void Widget::menuInit()
 {
@@ -400,7 +400,26 @@ void Widget::setUartUiIsEnabled(bool state)
  */
 void Widget::uartMsgHandle(const QString& msg)
 {
-    if (msg == "openFail") //打开失败
+    if (msg == "readyRead") //接收到数据
+    {
+        if (ui->uartRecStopBtn->checkState() != Qt::Checked) //暂停接收按钮没有被按下
+        {
+            QByteArray recText = uartThread->recBufferUart.dequeue();   //获取接收缓冲区的数据
+            recBytes += recText.length();                           //追加接收到的字符字节数量
+            ui->recLabel->setText(QString("接收字节数:%1").arg(recBytes));
+            if (ui->uartRecHexBtn->isChecked())                     //判断是否显示16进制
+            {
+                QByteArray_to_HexQByteArray(recText);
+            }
+            ui->uartRecText->moveCursor(QTextCursor::End);  //移动光标到末尾
+            ui->uartRecText->insertPlainText(recText);  //文末追加文本
+        }
+        else
+        {
+            uartThread->recBufferUart.clear();
+        }
+    }
+    else if (msg == "openFail") //打开失败
     {
         QMessageBox::warning(this, tr("警告"), tr("无法打开串口"));
         isUartConnected = false;
@@ -416,27 +435,7 @@ void Widget::uartMsgHandle(const QString& msg)
         uartThread->start();
         isUartConnected = true;
     }
-    else if (msg == "readyRead") //接收到数据
-    {
-        if (ui->uartRecStopBtn->checkState() != Qt::Checked) //暂停接收按钮没有被按下
-        {
-            QByteArray recText = uartThread->recBufferUart.dequeue();   //获取接收缓冲区的数据
-            recBytes += recText.length();                           //追加接收到的字符字节数量
-            ui->recLabel->setText(QString("接收字节数:%1").arg(recBytes));
-            QString lastText = ui->uartRecText->toPlainText();      //获取已经显示的文本
-            if (ui->uartRecHexBtn->isChecked())                     //判断是否显示16进制
-            {
-                QByteArray_to_HexQByteArray(recText);
-            }
-            lastText += recText;                            //在末尾追加字符串
-            ui->uartRecText->setText(lastText);             //刷新文本显示
-            ui->uartRecText->moveCursor(QTextCursor::End);  //滑动显示的文本框
-        }
-        else
-        {
-            uartThread->recBufferUart.clear();
-        }
-    }
+
 }
 
 /**
@@ -492,18 +491,18 @@ void Widget::pidInit()
         }
     });
 
-    /*************限制输入框内容***********************************************/
-    QRegExp regExp(R"(^((\-?)(\d{1,6})(\.?)(\d{1,6}))?$)"); //正则表达式(注意原始字面量)
+    /*************用正则表达式限制输入框内容***********************************************/
+    QRegExp regExp(R"(^((\-?)(\d{1,6})(\.?)(\d{1,6}))?$)"); //正则表达式(注意使用原始字面量)
     ui->pidPEdit->setValidator(new QRegExpValidator(regExp, this));
     ui->pidIEdit->setValidator(new QRegExpValidator(regExp, this));
     ui->pidDEdit->setValidator(new QRegExpValidator(regExp, this));
-    regExp.setPattern(R"(^([1-9][0-9]{1,5})?$)");   //正则表达式(注意原始字面量)
+    regExp.setPattern(R"(^([1-9][0-9]{1,5})?$)");   //正则表达式(注意使用原始字面量)
     ui->pidTargetEdit->setValidator(new QRegExpValidator(regExp, this));
     ui->pidCycleEdit->setValidator(new QRegExpValidator(regExp, this));
 
     this->setPidUiIsEnabled(true);
 
-    /******************保证输入数据的有效性**************************************/
+    /******************保证输入数据非空**************************************/
     connect(ui->pidPEdit, &QLineEdit::editingFinished, this, [=]()
     {
         if (ui->pidPEdit->text().isNull())
@@ -921,13 +920,12 @@ void Widget::pidSendData(const PID_MASTER::CMD cmd)
         break;
     case PID_MASTER::Param:
         sendText += QString::number(PID_MASTER::Param) + QString("|");
-        char *endPtr;
-        qDebug() << strtod(QString::asprintf("%f", ui->pidPEdit->text().toFloat()).toStdString().data(), &endPtr);
-
-//        qDebug() << atof(QString::asprintf("%f", ui->pidPEdit->text().toFloat()).toStdString().data());
         sendText += QString::asprintf("%f", ui->pidPEdit->text().toFloat()) + QString("|");
         sendText += QString::asprintf("%f", ui->pidIEdit->text().toFloat()) + QString("|");
         sendText += QString::asprintf("%f", ui->pidDEdit->text().toFloat()) + QString("|");
+        qDebug() << "pidPEdit" << atof(QString::asprintf("%f", ui->pidPEdit->text().toFloat()).toStdString().data());
+        qDebug() << "pidIEdit" << atof(QString::asprintf("%f", ui->pidIEdit->text().toFloat()).toStdString().data());
+        qDebug() << "pidDEdit" << atof(QString::asprintf("%f", ui->pidDEdit->text().toFloat()).toStdString().data());
         break;
     case PID_MASTER::Start:
         sendText += QString::number(PID_MASTER::Start) + QString("|");
@@ -950,7 +948,7 @@ void Widget::pidSendData(const PID_MASTER::CMD cmd)
     {
         sendText += QString::number(sendText.size() + 2)+ QString(")");
     }
-    qDebug() << sendText.size();
+    qDebug() << "sendText_size=" << sendText.size();
     emit sendPidDateSignal(sendText);
 }
 
@@ -1350,7 +1348,9 @@ void Widget::netSendDate()
     ui->sendLabel->setText(QString("发送字节数:%1").arg(sendBytes));
 }
 
-
+/**
+ * @brief 下载界面初始化
+ */
 void Widget::downloadInit()
 {
     ui->dowBaudRate->setCurrentIndex(5);
@@ -1416,7 +1416,6 @@ void Widget::ispSendCmd(ISP::CMD cmd)
     config.append(ui->dowBaudRate->currentText());  //波特率
     emit startDowThread(config);
 }
-
 
 /**
  * @brief 处理下载线程消息
