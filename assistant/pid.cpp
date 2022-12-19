@@ -2,7 +2,6 @@
 
 Pid::Pid(QObject *parent) : QThread(parent)
 {
-    setParent(parent);
     this->setParent(parent);
     port = new QSerialPort(this);
     connect(port, &QSerialPort::readyRead, this, [=]()
@@ -11,8 +10,7 @@ Pid::Pid(QObject *parent) : QThread(parent)
     });
 }
 
-Pid::~Pid()
-= default;
+Pid::~Pid() = default;
 
 /**
  * @brief 接收串口配置
@@ -84,12 +82,12 @@ void Pid::recConfig(const QStringList& config)
         if (!port->open(QIODevice::ReadWrite))
         {
             isConnected = false;
-            emit msgSignal("openFail");
+            emit msgSignal(COMMON_MSG::MSG::OpenFail);
         }
         else
         {
             isConnected = true;
-            emit msgSignal("openSuccessful");
+            emit msgSignal(COMMON_MSG::MSG::OpenSuccessful);
         }
     }
 }
@@ -109,11 +107,16 @@ void Pid::run()
             QStringList strList;
             if (recText.startsWith('(') && recText.endsWith(')'))
             {
+                //去头尾再分割
                 recText.remove(0, 1);
                 recText.remove(recText.size() - 1, 1);
-                strList = recText.split('|');
-                recBuffer.enqueue(strList);
-                emit msgSignal("readyRead");       //告诉主线程消息接收完成可以处理
+                if(recText.section('|', 0, 0).toUInt() == recText.size() + 2)
+                {
+                    strList = recText.split('|');
+                    strList.removeAt(0);
+                    recBuffer.enqueue(strList);
+                    emit msgSignal(COMMON_MSG::MSG::ReadyRead);       //告诉主线程消息接收完成可以处理                   
+                }
             }
         }
         else

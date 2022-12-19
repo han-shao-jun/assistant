@@ -6,6 +6,7 @@
 #include <QStringList>
 #include <QString>
 #include <QMutex>
+#include "def.h"
 
 class Pid: public QThread
 {
@@ -22,7 +23,7 @@ public slots:
     void write(const QByteArray& sendText);
 
 signals:
-    void msgSignal(const QString& msg);
+    void msgSignal(const COMMON_MSG::MSG& msg);
 
 protected:
     void run() override;

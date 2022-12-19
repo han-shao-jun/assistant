@@ -18,8 +18,7 @@ Uart::Uart(QObject *parent) : QThread(parent)
 /**
  * @brief 线程析构
  */
-Uart::~Uart()
-= default;
+Uart::~Uart() = default;
 
 /**
  * @brief 接收串口配置
@@ -85,18 +84,15 @@ void Uart::recConfig(const QStringList& config)
     }
     port->setFlowControl(QSerialPort::NoFlowControl);
 
-    //通信协议
-    type = config[5];
-
     if (!port->open(QIODevice::ReadWrite))
     {
         isConnected = false;
-        emit msgSignal("openFail");
+        emit msgSignal(COMMON_MSG::MSG::OpenFail);
     }
     else
     {
         isConnected = true;
-        emit msgSignal("openSuccessful");
+        emit msgSignal(COMMON_MSG::MSG::OpenSuccessful);
     }
 }
 
@@ -108,30 +104,13 @@ void Uart::run()
     qDebug() << "Uart::run";
     recCopy.clear();
     recBufferUart.clear();
-    recBufferPid.clear();
     while (isConnected)
     {
         mutex.lock();
         if (!recCopy.isEmpty())
         {
-            if (type == QString("UART"))
-            {
-                recBufferUart.enqueue(recCopy.dequeue()); //取出recCopy头部数据向recBuffer尾部插入
-                emit msgSignal("readyRead");              //告诉主线程消息接收完成可以打印显示信息了             
-            }
-            else
-            {
-                QString recText = recCopy.dequeue();  //获取接收缓冲区的数据
-                QStringList strList;
-                if (recText.startsWith('(') && recText.endsWith(')'))
-                {
-                    recText.remove(0, 1);
-                    recText.remove(recText.size() - 1, 1);
-                    strList = recText.split('|');
-                    recBufferPid.enqueue(strList);
-                    emit msgSignal("readyRead");          //告诉主线程消息接收完成可以处理    
-                }
-            }
+            recBufferUart.enqueue(recCopy.dequeue()); //取出recCopy头部数据向recBuffer尾部插入
+            emit msgSignal(COMMON_MSG::MSG::ReadyRead); //告诉主线程消息接收完成可以打印显示信息了
         }
         else
         {

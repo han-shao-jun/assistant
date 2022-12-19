@@ -8,6 +8,7 @@
 #include <QMutex>
 #include <QQueue>
 #include <QThread>
+#include "def.h"
 
 class Uart : public QThread
 {
@@ -17,7 +18,6 @@ public:
     ~Uart() override;
 
     QQueue<QByteArray> recBufferUart, recCopy;   //接收双缓存区
-    QQueue<QStringList> recBufferPid;
 
 public slots:
     void recConfig(const QStringList& config);
@@ -28,7 +28,7 @@ protected:
     void run() override;
 
 signals:
-    void msgSignal(const QString& msg);
+    void msgSignal(const COMMON_MSG::MSG& msg);
 
 private:
     QMutex mutex;

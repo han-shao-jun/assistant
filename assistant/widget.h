@@ -22,6 +22,7 @@
 #include "network.h"
 #include "serialportinfo.h"
 #include "download.h"
+#include "def.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -30,39 +31,6 @@ namespace Ui
     class Widget;
 }
 QT_END_NAMESPACE
-
-/**
- * @brief 上位机向下位机发送的命令
- */
-namespace PID_MASTER
-{
-    enum CMD : quint8
-    {
-        Target = 0x01u,   //设置下位机通道的目标值(1个int类型)
-        Reset  = 0x02u,   //设置下位机复位指令
-        Param  = 0x03u,   //设置下位机PID值(3个，P、I、D，float类型)
-        Start  = 0x04u,   //设置下位机启动指令
-        Stop   = 0x05u,   //设置下位机停止指令
-        Cycle  = 0x06u,   //设置下位机周期(int类型)
-    };
-}
-
-/**
- * @brief 下位机向上位机发送的命令
- */
-namespace PID_SLAVE
-{
-    enum CMD : quint8
-    {
-        Target = 0x01u,   //设置上位机通道的目标值(1个int类型)
-        Actual = 0x02u,   //设置上位机通道实际值
-        Param  = 0x03u,   //设置上位机PID值(3个，P、I、D，float类型)
-        Start  = 0x04u,   //设置上位机启动指令(同步上位机的按钮状态)
-        Stop   = 0x05u,   //设置上位机停止指令(同步上位机的按钮状态)
-        Cycle  = 0x06u,   //设置上位机周期(1个int类型)
-    };
-}
-
 
 
 class Widget : public QWidget
@@ -95,10 +63,10 @@ Q_SIGNALS:
 private slots:
     void menuBtnClicked();
 
-    void uartMsgHandle(const QString& msg);
+    void uartMsgHandle(const COMMON_MSG::MSG& msg);
     void uartSendData();
 
-    void pidMsgHandle(const QString& msg);
+    void pidMsgHandle(const COMMON_MSG::MSG& msg);
     void pidSendData(PID_MASTER::CMD cmd);
 
     void netMsgHandle(const QString& msg);

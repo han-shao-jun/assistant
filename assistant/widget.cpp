@@ -8,6 +8,8 @@ Widget::Widget(QWidget *parent)
     ui->setupUi(this);
     setWindowTitle(tr("多功能调试助手"));
 
+    qRegisterMetaType<COMMON_MSG::MSG>("COMMON_MSG::MSG"); //注册元类型，用于信号与槽传递数据
+
     serialPortInfo = new SerialPortInfo(this);
 
     /**************新建串口线程*********************************/
@@ -147,7 +149,7 @@ void Widget::menuInit()
         {
             #ifdef Q_OS_WINDOWS
             //调用windows api 置顶层
-            ::SetWindowPos((HWND)winId(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+            ::SetWindowPos((HWND)this->winId(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
             isTop = true;
             #endif
         }
@@ -155,7 +157,7 @@ void Widget::menuInit()
         {
             #ifdef Q_OS_WINDOWS
             //调用windows api 取消置顶层
-            ::SetWindowPos((HWND)winId(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+            ::SetWindowPos((HWND)this->winId(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
             isTop = false;
             #endif
         }
@@ -252,7 +254,6 @@ void Widget::uartInit()
                 uartConfig.append(QString::number(ui->uartCheckBit->currentIndex()));
                 uartConfig.append(ui->uartDataBit->currentText());
                 uartConfig.append(QString::number(ui->uartStopBit->currentIndex()));
-                uartConfig.append(QString("UART"));
                 serialPortInfo->registerUsingSerialPort(ui->uartPortName->currentText());
                 emit startUartThread(uartConfig);
             }
@@ -398,9 +399,9 @@ void Widget::setUartUiIsEnabled(bool state)
  * @brief 处理串口线程的信号
  * @param msg 收到的信号
  */
-void Widget::uartMsgHandle(const QString& msg)
+void Widget::uartMsgHandle(const COMMON_MSG::MSG& msg)
 {
-    if (msg == "readyRead") //接收到数据
+    if (msg == COMMON_MSG::MSG::ReadyRead) //接收到数据
     {
         if (ui->uartRecStopBtn->checkState() != Qt::Checked) //暂停接收按钮没有被按下
         {
@@ -419,12 +420,12 @@ void Widget::uartMsgHandle(const QString& msg)
             uartThread->recBufferUart.clear();
         }
     }
-    else if (msg == "openFail") //打开失败
+    else if (msg == COMMON_MSG::MSG::OpenFail) //打开失败
     {
         QMessageBox::warning(this, tr("警告"), tr("无法打开串口"));
         isUartConnected = false;
     }
-    else if (msg == "openSuccessful") //打开成功
+    else if (msg == COMMON_MSG::MSG::OpenSuccessful) //打开成功
     {
         setUartUiIsEnabled(false);                  //改变控件的状态
         ui->uartOperateBtn->setText(tr("关闭串口"));  //改变按钮文字
@@ -435,7 +436,6 @@ void Widget::uartMsgHandle(const QString& msg)
         uartThread->start();
         isUartConnected = true;
     }
-
 }
 
 /**
@@ -662,7 +662,7 @@ void Widget::pidInit()
         ui->customPlot->graph(3)->data().data()->clear();
         ui->customPlot->xAxis->setRange(0,5);   //还原横坐标
         ui->customPlot->replot();
-        pidCycleKey = 0;
+        pidCycleKey = 0.0;
     });
     connect(ui->pidActualCH1, &QCheckBox::clicked, this, [=]()      //通道1实际值显示
     {
@@ -832,24 +832,12 @@ void Widget::setPidUiIsEnabled(bool state)
  * @brief PID线程数据处理
  * @param msg 收的到的消息
  */
-void Widget::pidMsgHandle(const QString& msg)
+void Widget::pidMsgHandle(const COMMON_MSG::MSG& msg)
 {
-    if (msg == "openFail") //打开失败
+    if (msg == COMMON_MSG::MSG::ReadyRead) //接收到数据
     {
-        QMessageBox::warning(this, tr("警告"), tr("无法打开串口"));
-        isPidConnected = false;
-    }
-    else if (msg == "openSuccessful") //打开成功
-    {
-        setPidUiIsEnabled(false);                   //改变控件的状态
-        ui->pidOperateBtn->setText(tr("关闭串口"));   //改变按钮文字
-        pidThread->start();
-        isPidConnected = true;
-    }
-    else if (msg == "readyRead") //接收到数据
-    {
-        QStringList strList = uartThread->recBufferPid.dequeue();  //获取接收缓冲区的数据;
-        switch (strList[1].toUShort())
+        QStringList strList = pidThread->recBuffer.dequeue();  //获取接收缓冲区的数据;
+        switch (strList[0].toUShort())
         {
         case PID_SLAVE::Target:     //同步目标值
             ui->pidTargetEdit->setText(strList[2]);
@@ -858,7 +846,7 @@ void Widget::pidMsgHandle(const QString& msg)
             if (ui->pidStopDisplayBtn->checkState() != Qt::Checked) //停止显示按钮没有被按下
             {
                 pidCycleKey += pidCycleKeyStep;
-                ui->customPlot->graph(strList[0].toInt()-1)->addData(pidCycleKey, strList[2].toDouble());//添加数据到对应曲线
+                ui->customPlot->graph(strList[1].toInt()-1)->addData(pidCycleKey, strList[2].toDouble());//添加数据到对应曲线
 
                 //自动设定y轴的范围，如果不设定，有可能看不到图像
                 //也可以用ui->customPlot->yAxis->setRange(up,low)手动设定y轴范围
@@ -871,7 +859,7 @@ void Widget::pidMsgHandle(const QString& msg)
                 //也可以用ui->customPlot->yAxis->setRange(up,low)手动设定y轴范围
                 if (pidCycleKey > 3)
                     ui->customPlot->xAxis->setRange(pidCycleKey + 2, 5, Qt::AlignRight);   //设定x轴的范围实现自动滚动
-                ui->customPlot->replot();   //刷新图
+                ui->customPlot->replot();   //刷新图行
             }
             break;
         case PID_SLAVE::Param:      //同步PID参数
@@ -898,6 +886,19 @@ void Widget::pidMsgHandle(const QString& msg)
             break;
         }
     }
+    else if (msg == COMMON_MSG::MSG::OpenFail) //打开失败
+    {
+        QMessageBox::warning(this, tr("警告"), tr("无法打开串口"));
+        isPidConnected = false;
+    }
+    else if (msg == COMMON_MSG::MSG::OpenSuccessful) //打开成功
+    {
+        setPidUiIsEnabled(false);                 //改变控件的状态
+        ui->pidOperateBtn->setText(tr("关闭串口"));   //改变按钮文字
+        pidThread->start();
+        isPidConnected = true;
+    }
+
 }
 
 
@@ -923,9 +924,12 @@ void Widget::pidSendData(const PID_MASTER::CMD cmd)
         sendText += QString::asprintf("%f", ui->pidPEdit->text().toFloat()) + QString("|");
         sendText += QString::asprintf("%f", ui->pidIEdit->text().toFloat()) + QString("|");
         sendText += QString::asprintf("%f", ui->pidDEdit->text().toFloat()) + QString("|");
+
+#ifndef QT_NO_DEBUG_OUTPUT
         qDebug() << "pidPEdit" << atof(QString::asprintf("%f", ui->pidPEdit->text().toFloat()).toStdString().data());
         qDebug() << "pidIEdit" << atof(QString::asprintf("%f", ui->pidIEdit->text().toFloat()).toStdString().data());
         qDebug() << "pidDEdit" << atof(QString::asprintf("%f", ui->pidDEdit->text().toFloat()).toStdString().data());
+#endif
         break;
     case PID_MASTER::Start:
         sendText += QString::number(PID_MASTER::Start) + QString("|");
