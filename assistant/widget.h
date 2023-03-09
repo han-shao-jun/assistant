@@ -69,7 +69,7 @@ private slots:
     void pidMsgHandle(const COMMON_MSG::MSG& msg);
     void pidSendData(PID_MASTER::CMD cmd);
 
-    void netMsgHandle(const QString& msg);
+    void netMsgHandle(const COMMON_MSG::MSG& msg);
     void netSendDate();
 
     void dowMsgHandle(const QString& msg);

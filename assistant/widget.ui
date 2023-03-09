@@ -151,7 +151,7 @@
    <item>
     <widget class="QStackedWidget" name="mainWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="uartPage">
       <layout class="QGridLayout" name="gridLayout_4">
@@ -2467,6 +2467,32 @@ p, li { white-space: pre-wrap; }
           <attribute name="title">
            <string>OpenOCD</string>
           </attribute>
+          <widget class="QLabel" name="label">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>20</y>
+             <width>51</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>芯片型号</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_2">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>50</y>
+             <width>51</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>接口型号</string>
+           </property>
+          </widget>
          </widget>
          <widget class="QWidget" name="JLink">
           <attribute name="title">

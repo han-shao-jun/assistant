@@ -32,7 +32,7 @@ namespace PID_SLAVE
         Start,          //设置上位机启动指令(同步上位机的按钮状态)
         Stop,           //设置上位机停止指令(同步上位机的按钮状态)
         Cycle ,         //设置上位机周期(1个int类型)
-    };
+    };  
 }
 
 /**
@@ -45,7 +45,8 @@ namespace COMMON_MSG
         OpenFail = 0u,      //打开设备失败
         OpenSuccessful,     //打开设备成功
         ReadyRead,          //可从设备读取数据
-        Disconnected        //设备短卡连接
+        Disconnected,       //设备断开连接
+        Connected           //设备连接成功
     };
 }
 

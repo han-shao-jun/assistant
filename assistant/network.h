@@ -10,11 +10,11 @@
 #include <QUdpSocket>
 #include <QMutex>
 #include <QVector>
+#include "def.h"
 
 class Network: public QThread
 {
     Q_OBJECT
-
 
 public:
     explicit Network(QObject *parent  = nullptr);
@@ -23,13 +23,12 @@ public:
     QString protocol;
     QTcpServer *tcpServer;
     QTcpSocket *tcpSocketServer;
-//    QVector<QTcpSocket*> tcpSocketServer;
     quint8 client_num = 0;
     QTcpSocket *tcpSocketClient;
     QUdpSocket *udpSocket;
     bool connectFlag  = false;
     QQueue<QByteArray> recBuffer;      //要打印显示的信息
-    QQueue<QByteArray> recCopy;        //接收到的原始数据
+    QQueue<QByteArray> recCopy;        //从网卡接收到的原始数据
 
     QString tcpClientName;
     QHostAddress tcpClientIp;
@@ -39,7 +38,7 @@ public:
     quint16  udpClientPort;
 
 signals:
-    void msgSignal(const QString& signal);
+    void msgSignal(const COMMON_MSG::MSG& signal);
 
 public slots:
     void recConfig(const QStringList& config);

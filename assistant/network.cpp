@@ -1,3 +1,14 @@
+/**
+ * @file network.cpp                
+ * @author han
+ * @brief 网络通信线程处理，选择IP时注意网卡的连接，未互联的网卡不能通信
+ * @version 0.1
+ * @date 2023-03-09
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include "network.h"
 
 Network::Network(QObject *parent) : QThread(parent)
@@ -29,26 +40,25 @@ Network::Network(QObject *parent) : QThread(parent)
         connect(tcpSocketServer, &QTcpSocket::disconnected, this, [=]()
         {
             //关闭套接字
-            qDebug() << "disconnected" << QThread::currentThreadId();
             if (connectFlag)
             {
                 connectFlag = false;
                 tcpSocketServer->abort();
                 tcpSocketServer->close();
                 tcpSocketServer->disconnect();
-                emit msgSignal("disconnected");
+                emit msgSignal(COMMON_MSG::MSG::Disconnected);
             }
         });
 
         connectFlag = true;
-        emit msgSignal("connected");
+        emit msgSignal(COMMON_MSG::MSG::Connected);
     });
 
     //连接TCP服务器
     connect(tcpSocketClient, &QTcpSocket::connected, this, [=]()
     {
         connectFlag = true;
-        emit msgSignal("connected");
+        emit msgSignal(COMMON_MSG::MSG::Connected);
     });
     connect(tcpSocketClient, &QTcpSocket::readyRead, this, [=]()
     {
@@ -59,7 +69,7 @@ Network::Network(QObject *parent) : QThread(parent)
     connect(tcpSocketClient, &QTcpSocket::disconnected, this, [=]()
     {
         connectFlag = false;
-        emit msgSignal("disconnected");
+        emit msgSignal(COMMON_MSG::MSG::Connected);
     });
 
     //UDP通信
@@ -77,8 +87,7 @@ Network::Network(QObject *parent) : QThread(parent)
     });
 }
 
-Network::~Network()
-= default;
+Network::~Network() = default;
 
 
 /**
@@ -106,7 +115,7 @@ void Network::recConfig(const QStringList &config)
         udpClientIp = QHostAddress(config[3]);
         udpClientPort = config[4].toUInt();
         connectFlag = true;
-        emit msgSignal("connected");
+        emit msgSignal(COMMON_MSG::MSG::Connected);
         break;
     default:
         break;
@@ -127,7 +136,7 @@ void Network::run()
         if (!recCopy.isEmpty())
         {
             recBuffer.enqueue(recCopy.dequeue());
-            emit msgSignal("readyRead");
+            emit msgSignal(COMMON_MSG::MSG::ReadyRead);
         }
         else
         {
@@ -181,8 +190,7 @@ void Network::write(const QByteArray& msg)
         }
         else
         {
-            qDebug() << "UDP writeDatagram" << msg << udpClientIp << udpClientPort;
-            qDebug() << udpSocket->writeDatagram(msg, QHostAddress("192.168.137.1"), 8080); //虚拟网卡不支持发送
+            udpSocket->writeDatagram(msg, udpClientIp, udpClientPort); //本地虚拟网卡不支持发送
         }
     }
 }

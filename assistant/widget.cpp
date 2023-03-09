@@ -1286,24 +1286,9 @@ void Widget::netConnectUiIsEnabled(bool state)
  * @brief 处理网络通信消息
  * @param msg 收到的消息
  */
-void Widget::netMsgHandle(const QString& msg)
+void Widget::netMsgHandle(const COMMON_MSG::MSG& msg)
 {
-    if (msg == "connected")
-    {
-        netConnectFlag = true;
-        netThread->start();
-        netConnectUiIsEnabled(true);
-    }
-    else if (msg == "disconnected")
-    {
-        netAutoSendTimer->stop();
-        netConnectFlag = false;
-        netConnectUiIsEnabled(false);
-        emit closeNetThread();
-        netThread->quit();
-        netThread->wait();
-    }
-    else if (msg == "readyRead")
+    if (msg == COMMON_MSG::MSG::ReadyRead)  //可以读到数据
     {
         if (widgetIndex == 2) //网络数据显示页面
         {
@@ -1330,6 +1315,21 @@ void Widget::netMsgHandle(const QString& msg)
         {
 
         }
+    }
+    else if (msg == COMMON_MSG::MSG::Connected)     //连接成功
+    {
+        netConnectFlag = true;
+        netThread->start();
+        netConnectUiIsEnabled(true);
+    }
+    else if (msg == COMMON_MSG::MSG::Disconnected)     //断开连接
+    {
+        netAutoSendTimer->stop();
+        netConnectFlag = false;
+        netConnectUiIsEnabled(false);
+        emit closeNetThread();
+        netThread->quit();
+        netThread->wait();
     }
 }
 
