@@ -5,47 +5,64 @@
 #include <QThread>
 #include <QTimer>
 #include <QByteArray>
+#include "def.h"
+#include "ymodem.h"
+
+#define START 0x00
+#define SEND  0x01
+#define FIRST_SEND  0x02
+#define END_CHECK 0x03
+#define END  0x04
 
 /**
  * @brief ISP命令
  */
-namespace ISP
+namespace DOW
 {
     enum CMD : quint8
     {
-        Flash    = 0x01, //下载
+        Open = 0x00, //打开
+        Flash = 0x01, //下载
         ReadInfo = 0x02, //读取芯片信息
-        Erase    = 0x03, //擦除
+        Erase = 0x03, //擦除
+        Close = 0x04, //关闭
+    };
+    enum TYPE : quint8
+    {
+        ISP = 0x00,
+        IAP = 0x01,
+        OpenOCD = 0x02,
+        Jink = 0x03,
+        STlink = 0x04,
     };
 }
 
-class Download : public QThread
+class Download : public QObject
 {
 Q_OBJECT
 public:
     explicit Download(QObject *parent = nullptr);
     ~Download() override;
-
-    QQueue<QByteArray> recCopy;   //接收双缓存区
+    QQueue<QByteArray> recBuffer;      //要打印显示的信息
+    QQueue<QByteArray> recCopy;        //接收到的原始信息
 
 public slots:
+    void doWork(const QStringList& config);
 
-    void recConfig(const QStringList& config);
-    void close();
 
 signals:
-    void msgSignal(const QString& msg);
+    void msgSignal(const DOW::TYPE type, const COMMON_MSG::MSG& msg);
 
 protected:
-    void run() override;
 
 private:
     QMutex mutex;
-    QSerialPort *port;        //将要打开的串口端口
-    QString portDes;          //将要打开的串口描述
     bool isConnected = false;
-    QString type, cmd, flowControl;
+    QSerialPort *port = nullptr;         //将要打开的串口端口
+    QString flowControl;
+    quint8 type{}, cmd{};
     QTimer timer;
+    QStringList configCopy;
 };
 
 

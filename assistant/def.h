@@ -46,7 +46,10 @@ namespace COMMON_MSG
         OpenSuccessful,     //打开设备成功
         ReadyRead,          //可从设备读取数据
         Disconnected,       //设备断开连接
-        Connected           //设备连接成功
+        Connected,          //设备连接成功
+        SyncSuccessful,
+        TimeOut,
+        ProcessDone,
     };
 }
 

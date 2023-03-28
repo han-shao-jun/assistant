@@ -17,13 +17,14 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QVector>
+#include <QThread>
 #include "uart.h"
 #include "pid.h"
 #include "network.h"
 #include "serialportinfo.h"
 #include "download.h"
 #include "def.h"
-
+#include "osc.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -56,7 +57,11 @@ Q_SIGNALS:
     void closeNetThread();
     void sendNetDateSignal(const QByteArray& sendText);
 
-    void startDowThread(const QStringList &config);
+    void startOscThread(const QStringList &config);
+    void closeOscThread();
+    void sendOscDateSignal(const QByteArray& sendText);
+
+    void sendDowCmd(const QStringList &config);
     void closeDowThread();
     void sendDowDateSignal(const QByteArray& sendText);
 
@@ -72,7 +77,10 @@ private slots:
     void netMsgHandle(const COMMON_MSG::MSG& msg);
     void netSendDate();
 
-    void dowMsgHandle(const QString& msg);
+    void oscMsgHandle(const COMMON_MSG::MSG& msg);
+    void oscSendDate();
+
+    void dowMsgHandle(const DOW::TYPE type, const COMMON_MSG::MSG& msg);
 
 private:
     Ui::Widget *ui;
@@ -81,6 +89,7 @@ private:
     void uartInit();
     void pidInit();
     void netInit();
+    void oscUiInit();
     void downloadInit();
 
     void setUartUiIsEnabled(bool state);
@@ -89,7 +98,12 @@ private:
     void addUdp(bool state);
     void setNetConfigUiIsEnabled(bool state);
     void netConnectUiIsEnabled(bool state);
-    void ispSendCmd(ISP::CMD cmd);
+    void oscAddTcpServer(bool state);
+    void oscAddUdp(bool state);
+    void setOscConfigUiIsEnabled(bool state);
+    void oscConnectUiIsEnabled(bool state);
+    void packDowCmd(DOW::TYPE type, DOW::CMD cmd, QStringList& arg);
+
 
     int widgetIndex = 0;
     int widgetIndexLast = 0;
@@ -154,9 +168,34 @@ private:
     QStringList netConfig;
     QTimer *netAutoSendTimer{};
 
-    /*********下载**************/
-    Download *dowThread;
+    /*****OSC通信*****/
 
+    //TCP控件
+    QGridLayout *oscTcpGridLayout{};
+    QLabel *oscTcpConClient{};
+    QPushButton *oscTcpDisBtn{};
+    QComboBox *oscTcpClient{};
+
+    //UDP控件
+    QGridLayout *oscUdpGridLayout{};
+    QLabel *oscUdpDesLabel{};
+    QLineEdit *oscUdpDesIp{};
+    QLabel *oscUdpDesPortLabel{};
+    QLineEdit *oscUdpDesPort{};
+    QHostAddress oscUdpClientIp;
+
+    //网络通信线程
+
+    OSC *oscThread{};
+    bool oscConnectFlag = false;
+    QStringList oscConfig;  //通信配置
+
+    /*********下载**************/
+    QThread *dowThread;
+    Download *dowThreadWork;
+    bool ispConnected = false;
+    bool iapConnected = false;
+    QStringList dowCmdArg;
 };
 
 #endif // WIDGET_H

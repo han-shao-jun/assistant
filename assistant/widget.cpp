@@ -6,9 +6,12 @@ Widget::Widget(QWidget *parent)
         : QWidget(parent), ui(new Ui::Widget)
 {
     ui->setupUi(this);
+    qDebug() << "main id: " << QThread::currentThreadId();
     setWindowTitle(tr("多功能调试助手"));
 
     qRegisterMetaType<COMMON_MSG::MSG>("COMMON_MSG::MSG"); //注册元类型，用于信号与槽传递数据
+    qRegisterMetaType<DOW::CMD>("DOW::CMD");               //注册元类型，用于信号与槽传递数据
+    qRegisterMetaType<DOW::TYPE>("DOW::TYPE");             //注册元类型，用于信号与槽传递数据
 
     serialPortInfo = new SerialPortInfo(this);
 
@@ -42,13 +45,21 @@ Widget::Widget(QWidget *parent)
     connect(this, &Widget::sendNetDateSignal, netThread, &Network::write);  //主线程想网络通信线程发送数据
     connect(netThread, &Network::msgSignal, this, &Widget::netMsgHandle);   //主线程接收网络通信线程数据
 
+    /***********新建OSC页面线程**********************************/
+    oscThread = new OSC();
+    connect(this, &Widget::startOscThread, oscThread, &OSC::recConfig); // 主线程启动网络通信线程
+    connect(this, &Widget::closeOscThread, oscThread, &OSC::close);     // 主线程结束网络通信线程
+    connect(this, &Widget::sendOscDateSignal, oscThread, &OSC::write);  // 主线程向网络通信线程发送数据
+    connect(oscThread, &OSC::msgSignal, this, &Widget::oscMsgHandle);   // 主线程接收网络通信线程数据
 
     /***********新建下载页面线程**********************************/
-     dowThread = new Download();
-     connect(this, &Widget::startDowThread, dowThread, &Download::recConfig); //主线程启动下载线程
-     connect(this, &Widget::closeDowThread, dowThread, &Download::close);     //主线程结束下载线程
-     connect(dowThread, &Download::msgSignal, this, &Widget::dowMsgHandle);   //主线程接收下载线程数据
+    dowThread = new QThread();      //下载子线程
+    dowThreadWork = new Download(); //工作类
+    dowThreadWork->moveToThread(dowThread);
 
+    connect(this, &Widget::sendDowCmd, dowThreadWork, &Download::doWork); //主线程触发线程
+    connect(dowThreadWork, &Download::msgSignal, this, &Widget::dowMsgHandle);   //主线程接收下载线程消息
+    dowThread->start();
 
     /***********记录当前选择页面与上一次选择页面*******************/
     widgetIndex = ui->mainWidget->currentIndex();
@@ -69,8 +80,9 @@ Widget::Widget(QWidget *parent)
 
     this->menuInit();
     this->uartInit();
-    this->pidInit();    
+    this->pidInit();
     this->netInit();
+    this->oscUiInit();
     this->downloadInit();
 
     connect(ui->clearCounterBtn, &QPushButton::clicked, this, [=]()
@@ -127,6 +139,32 @@ Widget::~Widget()
     }
     delete netThread;
 
+    oscAddTcpServer(false);
+    delete oscTcpConClient;
+    delete oscTcpDisBtn;
+    delete oscTcpClient;
+    delete oscTcpGridLayout;
+
+    oscAddUdp(false);
+    delete oscUdpDesLabel;
+    delete oscUdpDesIp;
+    delete oscUdpDesPortLabel;
+    delete oscUdpDesPort;
+    delete oscUdpGridLayout;
+
+    if (oscConnectFlag)
+    {
+        emit closeOscThread();
+        oscThread->quit();
+        oscThread->wait();
+    }
+    delete oscThread;
+
+    dowThread->quit();
+    dowThread->wait();
+    delete dowThread;
+    delete dowThreadWork;
+
     delete ui;
     qDebug() << "delete ui";
 }
@@ -145,21 +183,21 @@ void Widget::menuInit()
     connect(ui->menuTopBtn, &QPushButton::clicked, this, [=]()
     {
         static bool isTop = false;
-        if(!isTop)
+        if (!isTop)
         {
-            #ifdef Q_OS_WINDOWS
+#ifdef Q_OS_WINDOWS
             //调用windows api 置顶层
             ::SetWindowPos((HWND)this->winId(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
             isTop = true;
-            #endif
+#endif
         }
         else
         {
-            #ifdef Q_OS_WINDOWS
+#ifdef Q_OS_WINDOWS
             //调用windows api 取消置顶层
             ::SetWindowPos((HWND)this->winId(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
             isTop = false;
-            #endif
+#endif
         }
     });
 }
@@ -299,29 +337,29 @@ void Widget::uartInit()
         if (date.isNull())
         {
             QMessageBox::warning(this, tr("错误"), tr("接收区没有数据"));
-            return ;
+            return;
         }
-        QString path = QFileDialog::getSaveFileName(this,tr("保存文件"),QDir::home().path(), "Text files (*.txt)");
-        if(path.isNull())
+        QString path = QFileDialog::getSaveFileName(this, tr("保存文件"), QDir::home().path(), "Text files (*.txt)");
+        if (path.isNull())
         {
-            return ;
+            return;
         }
         QFile file(path);               //参数就是文件的路径
         file.open(QIODevice::WriteOnly | QIODevice::Text); //设置打开方式
         QTextStream text(&file);
         text << date;
         file.close();                   //关闭文件对象
-    });  
+    });
     connect(ui->uartRecClearBtn, &QPushButton::clicked, this, [=]()         //清除串口接收区
     {
         ui->uartRecText->clear();
     });
     connect(ui->uartSendFileBtn, &QPushButton::clicked, this, [=]()         //发送区选择文件
     {
-        QString path = QFileDialog::getOpenFileName(this,"选择文件",QDir::home().path(), "Text files (*.txt)");
-        if(path.size() == 0)
+        QString path = QFileDialog::getOpenFileName(this, "选择文件", QDir::home().path(), "Text files (*.txt)");
+        if (path.size() == 0)
         {
-            return ;
+            return;
         }
         QFile file(path);                   //参数就是文件的路径
         file.open(QIODevice::ReadOnly);     //设置打开方式
@@ -660,7 +698,7 @@ void Widget::pidInit()
         ui->customPlot->graph(1)->data().data()->clear();
         ui->customPlot->graph(2)->data().data()->clear();
         ui->customPlot->graph(3)->data().data()->clear();
-        ui->customPlot->xAxis->setRange(0,5);   //还原横坐标
+        ui->customPlot->xAxis->setRange(0, 5);   //还原横坐标
         ui->customPlot->replot();
         pidCycleKey = 0.0;
     });
@@ -725,7 +763,7 @@ void Widget::pidInit()
     {
         if (ui->pidTargetCH1->checkState() == Qt::Checked)
         {
-            targetLineCH1->start->setCoords(0,pidChannel[0]->target.toDouble());
+            targetLineCH1->start->setCoords(0, pidChannel[0]->target.toDouble());
             targetLineCH1->end->setCoords(10000, pidChannel[0]->target.toDouble());
             targetLineCH1->setVisible(true);
         }
@@ -846,7 +884,7 @@ void Widget::pidMsgHandle(const COMMON_MSG::MSG& msg)
             if (ui->pidStopDisplayBtn->checkState() != Qt::Checked) //停止显示按钮没有被按下
             {
                 pidCycleKey += pidCycleKeyStep;
-                ui->customPlot->graph(strList[1].toInt()-1)->addData(pidCycleKey, strList[2].toDouble());//添加数据到对应曲线
+                ui->customPlot->graph(strList[1].toInt() - 1)->addData(pidCycleKey, strList[2].toDouble());//添加数据到对应曲线
 
                 //自动设定y轴的范围，如果不设定，有可能看不到图像
                 //也可以用ui->customPlot->yAxis->setRange(up,low)手动设定y轴范围
@@ -946,11 +984,11 @@ void Widget::pidSendData(const PID_MASTER::CMD cmd)
     }
     if (sendText.size() + 2 >= 10)
     {
-        sendText += QString::number(sendText.size() + 3)+ QString(")");
+        sendText += QString::number(sendText.size() + 3) + QString(")");
     }
     else
     {
-        sendText += QString::number(sendText.size() + 2)+ QString(")");
+        sendText += QString::number(sendText.size() + 2) + QString(")");
     }
     qDebug() << "sendText_size=" << sendText.size();
     emit sendPidDateSignal(sendText);
@@ -1123,12 +1161,12 @@ void Widget::netInit()
         if (date.size() == 0)
         {
             QMessageBox::warning(this, tr("错误"), tr("接收区没有数据"));
-            return ;
+            return;
         }
-        QString path = QFileDialog::getSaveFileName(this,tr("保存文件"),QDir::home().path(), "Text files (*.txt)");
-        if(path.size() == 0)
+        QString path = QFileDialog::getSaveFileName(this, tr("保存文件"), QDir::home().path(), "Text files (*.txt)");
+        if (path.size() == 0)
         {
-            return ;
+            return;
         }
         QFile file(path);               //参数就是文件的路径
         file.open(QIODevice::WriteOnly | QIODevice::Text); //设置打开方式
@@ -1142,10 +1180,10 @@ void Widget::netInit()
     });
     connect(ui->netSendFileBtn, &QPushButton::clicked, this, [=]()      //选择文件发送
     {
-        QString path = QFileDialog::getOpenFileName(this,"选择文件",QDir::home().path(), "Text files (*.txt)");
-        if(path.size() == 0)
+        QString path = QFileDialog::getOpenFileName(this, "选择文件", QDir::home().path(), "Text files (*.txt)");
+        if (path.size() == 0)
         {
-            return ;
+            return;
         }
         QFile file(path);                   //参数就是文件的路径
         file.open(QIODevice::ReadOnly);     //设置打开方式
@@ -1353,43 +1391,473 @@ void Widget::netSendDate()
 }
 
 /**
+ * @brief ui界面初始化
+ */
+void Widget::oscUiInit()
+{
+    /**********网络通信界面连上TCP服务器的客户端(左下侧界面)************/
+    oscTcpGridLayout = new QGridLayout();
+    oscTcpConClient = new QLabel();
+    oscTcpDisBtn = new QPushButton();
+    oscTcpDisBtn->setText(tr("断开"));
+    oscTcpClient = new QComboBox();
+    oscTcpClient->addItem(tr("All Client"));
+    oscTcpConClient->setText(tr("客户端"));
+    oscAddTcpServer(true);
+
+    /***********网络通信界面UDP通信对方IP与端口(左下侧界面)************/
+    oscUdpGridLayout = new QGridLayout();
+    oscUdpDesLabel = new QLabel();
+    oscUdpDesLabel->setText(tr("目的地址:"));
+    oscUdpDesIp = new QLineEdit();
+    oscUdpDesPortLabel = new QLabel();
+    oscUdpDesPortLabel->setText(tr("目的端口:"));
+    oscUdpDesPort = new QLineEdit();
+
+
+    ui->oscIp->setEditable(true);                  // 使下拉选框可以编辑
+    ui->oscIp->addItems(OSC::getAllLocalIp()); // 更新可用IP
+
+    /*************网络通信界面UI控件信号与槽连接**********************/
+    connect(ui->oscProtocol, &QComboBox::currentTextChanged, this, [=]()
+    {
+        static quint8 oscIndex = 0;
+        qDebug() << oscIndex;
+        switch (ui->oscProtocol->currentIndex())
+        {
+        case 0:
+            ui->oscOperateBtn->setText(tr("开始监听"));
+            if (oscIndex == 2)
+            {
+                oscAddUdp(false);
+            }
+            oscAddTcpServer(true);
+            oscIndex = 0;
+            break;
+        case 1:
+            ui->oscOperateBtn->setText(tr("开始连接"));
+            if (oscIndex == 0)
+            {
+                oscAddTcpServer(false);
+            }
+            else
+            {
+                oscAddUdp(false);
+            }
+            oscIndex = 1;
+            break;
+        case 2:
+            ui->oscOperateBtn->setText(tr("打开"));
+            if (oscIndex == 0)
+            {
+                oscAddTcpServer(false);
+            }
+            oscAddUdp(true);
+            oscIndex = 2;
+            break;
+        default:
+            break;
+        }
+    });
+    // 网络通信启动按钮
+    connect(ui->oscOperateBtn, &QPushButton::clicked, this, [=]()
+    {
+        if (ui->oscProtocol->isEnabled())
+        {
+            switch (ui->oscProtocol->currentIndex())
+            {
+            case 0:
+                ui->oscOperateBtn->setText(tr("停止监听"));
+                break;
+            case 1:
+                ui->oscOperateBtn->setText(tr("断开连接"));
+                break;
+            case 2:
+                ui->oscOperateBtn->setText(tr("关闭"));
+                break;
+            }
+            oscConfig.clear();
+            oscConfig.append(QString::number(ui->oscProtocol->currentIndex())); //通信类型
+            oscConfig.append(ui->oscIp->currentText());    //本地IP(三种通信)
+            oscConfig.append(ui->oscPort->text());         //本地端口(三种通信)
+
+            /************通信配置正确性验证******************/
+            if (ui->oscProtocol->currentIndex() == 2)      //UDP通信
+            {
+                oscConfig.append(oscUdpDesIp->text());     //UDP远程IP
+                oscUdpClientIp = QHostAddress(oscConfig[3]);
+                if (oscUdpClientIp.isNull())
+                {
+                    QMessageBox::warning(this, tr("错误"), tr("UDP远程IP填写错误"));
+                    return;
+                }
+                oscConfig.append(oscUdpDesPort->text());     //UDP远程端口
+                if (ui->oscPort->text().toUInt() == 0 && oscUdpDesPort->text().toUInt() == 0)
+                {
+                    QMessageBox::warning(this, tr("错误"), tr("端口填写错误"));
+                    return;
+                }
+            }
+            else if (ui->oscPort->text().toUInt() == 0) //TCP通信端口
+            {
+                QMessageBox::warning(this, tr("错误"), tr("本地端口填写错误"));
+                return;
+            }
+
+            emit startOscThread(oscConfig); // NOLINT(readability-misleading-indentation)
+            setOscConfigUiIsEnabled(false);
+        }
+        else  //停止监听或断开连接
+        {
+            oscConnectFlag = false;
+            emit closeOscThread();
+            oscThread->quit();
+            oscThread->wait();
+            setOscConfigUiIsEnabled(true);
+            oscConnectUiIsEnabled(false);
+            switch (ui->oscProtocol->currentIndex())
+            {
+            case 0:
+                ui->oscOperateBtn->setText(tr("开始监听"));
+                break;
+            case 1:
+                ui->oscOperateBtn->setText(tr("开始连接"));
+                break;
+            case 2:
+                ui->oscOperateBtn->setText(tr("打开"));
+                break;
+            }
+        }
+    });
+    connect(ui->oscSendBtn, &QPushButton::clicked, this, &Widget::oscSendDate);
+
+    /****************曲线处理********************************/
+    ui->oscCustomPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iMultiSelect); // 可拖拽+可滚轮缩放+可以被选中
+
+
+    //背景网格样式
+    ui->oscCustomPlot->xAxis->grid()->setPen(QPen(QColor(50, 50, 50),1,Qt::SolidLine));
+    ui->oscCustomPlot->yAxis->grid()->setPen(QPen(Qt::SolidLine));
+    ui->oscCustomPlot->yAxis->grid()->setZeroLinePen(QPen(Qt::yellow, 1));    //y轴0刻度颜色
+    ui->oscCustomPlot->xAxis->grid()->setSubGridPen(QPen(QColor(50, 50, 50), 1, Qt::DotLine));//子网格浅色点线
+    ui->oscCustomPlot->yAxis->grid()->setSubGridPen(QPen(QColor(50, 50, 50), 1, Qt::DotLine));//子网格浅色点线
+    ui->oscCustomPlot->xAxis->grid()->setSubGridVisible(true);//显示x轴子网格线
+    ui->oscCustomPlot->yAxis->grid()->setSubGridVisible(true);//显示要轴子网格线
+    // ui->oscCustomPlot->xAxis->setTickLabels(false);    //横坐标值不可见
+
+
+    // customplot->xAxis->ticker()->setTickOrigin(1);//改变刻度原点为1
+
+    ui->oscCustomPlot->xAxis->setRange(0, 940, Qt::AlignLeft); // 设定x轴的范围
+    ui->oscCustomPlot->yAxis->setRange(-210, 210);  // 设定y轴的范围
+
+    /****************添加两条曲线*****************************/
+    ui->oscCustomPlot->addGraph();                         // 添加一条曲线
+    ui->oscCustomPlot->graph(0)->setPen(QPen(Qt::red));    // 曲线红色
+    ui->oscCustomPlot->graph(0)->setName("CH1");           // 图例名称
+    ui->oscCustomPlot->graph(0)->setVisible(true);         // 曲线有效显示
+    ui->oscCustomPlot->addGraph();
+    ui->oscCustomPlot->graph(1)->setPen(QPen(Qt::blue));
+    ui->oscCustomPlot->graph(1)->setName("CH2");
+    ui->oscCustomPlot->graph(1)->setVisible(true);
+
+    /*************曲线图例设置****************************/
+    ui->oscCustomPlot->legend->setFillOrder(QCPLayoutGrid::foRowsFirst);       // 设置图例优先按照列放置
+    ui->oscCustomPlot->legend->setWrap(4);                                     // 优先规则中最大数量(一排最多数量或一列最多数量，取决于优先放置规则)
+    ui->oscCustomPlot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignRight | Qt::AlignTop);  //图例放置在右上角
+    ui->oscCustomPlot->legend->setBorderPen(Qt::NoPen);                        // 设置边框隐藏
+    ui->oscCustomPlot->legend->setVisible(true);                               // 图例可见
+    ui->oscCustomPlot->replot(); // 刷新曲线
+}
+
+/**
+ * @brief 是否显示连上TCP服务器的客户端控件
+ * @param state 控件显示状态
+ *      @arg true 显示状态
+ *      @arg false 不显示状态
+ */
+void Widget::oscAddTcpServer(bool state)
+{
+    if (state)
+    {
+        oscTcpConClient->setParent(ui->oscConfigWidget);
+        oscTcpDisBtn->setParent(ui->oscConfigWidget);
+        oscTcpClient->setParent(ui->oscConfigWidget);
+        oscTcpGridLayout->addWidget(oscTcpConClient, 0, 0, 1, 1);
+        oscTcpGridLayout->addWidget(oscTcpDisBtn, 0, 1, 1, 1);
+        oscTcpGridLayout->addWidget(oscTcpClient, 1, 0, 1, 2);
+        ui->verticalLayout_8->addLayout(oscTcpGridLayout);
+    }
+    else
+    {
+        oscTcpConClient->setParent(nullptr);
+        oscTcpDisBtn->setParent(nullptr);
+        oscTcpClient->setParent(nullptr);
+        ui->verticalLayout_8->removeItem(oscTcpGridLayout);
+    }
+}
+
+/**
+ * @brief 是否显示对方UDP信息控件
+ * @param state 控件显示状态
+ *      @arg true 显示状态
+ *      @arg false 不显示状态
+ */
+void Widget::oscAddUdp(bool state)
+{
+    if (state)
+    {
+        oscUdpDesLabel->setParent(ui->oscConfigWidget);
+        oscUdpDesIp->setParent(ui->oscConfigWidget);
+        oscUdpDesPortLabel->setParent(ui->oscConfigWidget);
+        oscUdpDesPort->setParent(ui->oscConfigWidget);
+        oscUdpGridLayout->addWidget(oscUdpDesLabel, 0, 0, 1, 1);
+        oscUdpGridLayout->addWidget(oscUdpDesIp, 0, 1, 1, 1);
+        oscUdpGridLayout->addWidget(oscUdpDesPortLabel, 1, 0, 1, 1);
+        oscUdpGridLayout->addWidget(oscUdpDesPort, 1, 1, 1, 1);
+        ui->verticalLayout_8->addLayout(oscUdpGridLayout);
+    }
+    else
+    {
+        oscUdpDesLabel->setParent(nullptr);
+        oscUdpDesIp->setParent(nullptr);
+        oscUdpDesPortLabel->setParent(nullptr);
+        oscUdpDesPort->setParent(nullptr);
+        ui->verticalLayout_8->removeItem(oscUdpGridLayout);
+    }
+}
+
+/**
+ * @brief 网络通信界面UI控件是否可用
+ * @param state 状态
+ */
+void Widget::setOscConfigUiIsEnabled(bool state)
+{
+    ui->oscProtocol->setEnabled(state);
+    ui->oscIp->setEnabled(state);
+    ui->oscPort->setEnabled(state);
+}
+
+/**
+ * @brief 网络通信控件空间变化
+ * @param state 状态
+ */
+void Widget::oscConnectUiIsEnabled(bool state)
+{
+    ui->oscStateBtn->setChecked(state);
+    ui->oscSendBtn->setEnabled(state);
+}
+
+/**
+ * @brief 处理网络通信消息
+ * @param msg 收到的消息
+ */
+void Widget::oscMsgHandle(const COMMON_MSG::MSG& msg)
+{
+    if (msg == COMMON_MSG::MSG::ReadyRead) // 可以读到数据
+    {
+        if (ui->oscRecStopBtn->checkState() != Qt::Checked) // 暂停接收按钮没有被按下
+        {
+            QByteArray recText = oscThread->recBuffer.dequeue(); // 获取接收缓冲区的数据
+            QVector<double> xData, yData;
+
+            qDebug() << "size" << recText.size();
+            qDebug() << recText;
+            for (int i = 0; i < recText.size(); i++)
+            {
+                xData.append(i);
+                yData.append(static_cast<quint8>(recText[i]));  //只能获取字符型，需要转换
+            }
+            qDebug() << yData;
+            qDebug() << "yData[0]" << yData[0];
+            ui->oscCustomPlot->graph(0)->setData(xData, yData); // 添加数据到对应曲线（带清空数据）
+
+            // // 自动设定y轴的范围，如果不设定，有可能看不到图像
+            // // 也可以用ui->oscCustomPlot->yAxis->setRange(up,low)手动设定y轴范围
+
+            ui->oscCustomPlot->replot();                // 刷新图形
+
+            ui->recLabel->setText(QString("接收字节数:%1").arg(recText.size()));
+        }
+        else
+        {
+            oscThread->recBuffer.clear();
+        }
+    }
+    else if (msg == COMMON_MSG::MSG::Connected) // 连接成功
+    {
+        oscConnectFlag = true;
+        oscThread->start();
+        oscConnectUiIsEnabled(true);
+    }
+    else if (msg == COMMON_MSG::MSG::Disconnected) // 断开连接
+    {
+        oscConnectFlag = false;
+        oscConnectUiIsEnabled(false);
+        emit closeOscThread();
+        oscThread->quit();
+        oscThread->wait();
+    }
+}
+
+/**
+ * @brief 网络线程发送数据
+ */
+void Widget::oscSendDate()
+{
+    QByteArray sendText;
+    sendText = ui->oscSendText->toPlainText().toUtf8();
+
+    // if (ui->netSendNewlineBtn->checkState() == Qt::Checked) // 发送新行被选中
+    //     sendText += '\n';
+
+    // if (ui->netSendHexBtn->isChecked()) // 16进制发送
+    //     sendText = sendText.toHex();
+
+
+    // uint16_t N = 512; // 采样点数
+    // float sample_freq     = 120.0f;                     // 采样频率 120 Hz, 大于两倍的最高频率
+    // float sample_interval = 1 / sample_freq;            // 采样间隔0.008333步长
+    // float t               = 0;
+
+    // for (int i = 0; i < N; ++i)
+    // {
+    //     t += sample_interval;
+    //     sendText.append((uint8_t)(100 * (sin(2 * M_PI * t) + 1)) + 1); //加1保证数据不为0，否者上位机认为无效数据
+    // }
+
+    emit sendOscDateSignal(sendText);
+    sendBytes += sendText.length(); // 累加发送字符字节数
+    ui->sendLabel->setText(QString("发送字节数:%1").arg(sendBytes));
+}
+
+/**
  * @brief 下载界面初始化
  */
 void Widget::downloadInit()
 {
-    ui->dowBaudRate->setCurrentIndex(5);
-    ui->dowHWBtn->setCurrentIndex(3);
-
-    /**************填充可用串口*****************************/
-    auto ports = SerialPortInfo::availablePorts();
-    ui->dowPortName->clear();
-    ui->dowPortName->addItems(ports);
-    connect(serialPortInfo, &SerialPortInfo::update, this, [=](const QStringList& ports) //刷新可用串口
-    {
-        ui->dowPortName->clear();
-        ui->dowPortName->addItems(ports);
-    });
-
-    /*****************界面按钮信号与槽连接*************************************/
     connect(ui->dowFileBtn, &QToolButton::clicked, this, [=]()      //选择文件按钮
     {
-        QString path = QFileDialog::getOpenFileName(this,tr("选择文件"),QDir::home().path(), "Flash file (*.bin *.hex)");
+        QString path = QFileDialog::getOpenFileName(this, tr("选择文件"), QDir::home().path(), "Flash file (*.bin)");
         if (!path.isNull())
         {
             ui->dowFile->setText(path);
         }
     });
-    connect(ui->dowFlashBtn, &QPushButton::clicked, this, [=]()     //烧录按钮
+
+    //置零下载进度
+    ui->dowProgressBar->reset();
+
+    /**************ISP界面*****************************/
+    ui->ispDowBaudRate->setCurrentIndex(5);
+    ui->ispDowHWBtn->setCurrentIndex(3);
+    auto isp_ports = SerialPortInfo::availablePorts();
+    ui->ispDowPortName->clear();
+    ui->ispDowPortName->addItems(isp_ports);
+    ui->ispDowReadInfoBtn->setEnabled(false);
+    ui->ispDowFlashBtn->setEnabled(false);
+    ui->ispDowEraseBtn->setEnabled(false);
+    connect(serialPortInfo, &SerialPortInfo::update, this, [=](const QStringList& ports) //刷新可用串口
     {
-        this->ispSendCmd(ISP::Flash);
+        ui->ispDowPortName->clear();
+        ui->ispDowPortName->addItems(ports);
     });
-    connect(ui->dowReadInfoBtn, &QPushButton::clicked, this, [=]()  //读取芯片信息按钮
+
+    /*****************ISP界面按钮信号与槽连接*************************************/
+    connect(ui->ispDowOpBtn, &QPushButton::clicked, this, [=]() //串口操作按钮
     {
-        this->ispSendCmd(ISP::ReadInfo);
+        dowCmdArg.clear();
+        if (!ispConnected)
+        {
+            dowCmdArg.append(ui->ispDowPortName->currentText());  //端口名
+            dowCmdArg.append(ui->ispDowBaudRate->currentText());  //波特率
+            dowCmdArg.append(QString::number(ui->ispDowHWBtn->currentIndex()));    //流控
+            this->packDowCmd(DOW::TYPE::ISP, DOW::Open, dowCmdArg);
+        }
+        else
+        {
+            ispConnected = false;
+            ui->ispDowOpBtn->setText(tr("打开串口"));
+            ui->ispDowReadInfoBtn->setEnabled(false);
+            ui->ispDowFlashBtn->setEnabled(false);
+            ui->ispDowEraseBtn->setEnabled(false);
+
+            this->packDowCmd(DOW::TYPE::ISP, DOW::Close, dowCmdArg);
+        }
     });
-    connect(ui->dowEraseBtn, &QPushButton::clicked, this, [=]()     //擦除按钮
+    connect(ui->ispDowFlashBtn, &QPushButton::clicked, this, [=]()     //烧录按钮
     {
-        this->ispSendCmd(ISP::Erase);
+        dowCmdArg.clear();
+        dowCmdArg << ui->dowFile->text();
+        this->packDowCmd(DOW::TYPE::ISP, DOW::Flash, dowCmdArg);
+    });
+    connect(ui->ispDowReadInfoBtn, &QPushButton::clicked, this, [=]()  //读取芯片信息按钮
+    {
+        dowCmdArg.clear();
+        this->packDowCmd(DOW::TYPE::ISP, DOW::ReadInfo, dowCmdArg);
+    });
+    connect(ui->ispDowEraseBtn, &QPushButton::clicked, this, [=]()     //擦除按钮
+    {
+        dowCmdArg.clear();
+        this->packDowCmd(DOW::TYPE::ISP, DOW::Erase, dowCmdArg);
+    });
+
+    /**************IAP界面*****************************/
+    ui->iapDowBaudRate->setCurrentIndex(6);
+    auto iap_ports = SerialPortInfo::availablePorts();
+    ui->iapDowPortName->clear();
+    ui->iapDowPortName->addItems(iap_ports);
+    ui->iapDowReadInfoBtn->setEnabled(false);
+    ui->iapDowFlashBtn->setEnabled(false);
+    ui->iapDowEraseBtn->setEnabled(false);
+    connect(serialPortInfo, &SerialPortInfo::update, this, [=](const QStringList& ports) //刷新可用串口
+    {
+        ui->iapDowPortName->clear();
+        ui->iapDowPortName->addItems(ports);
+    });
+
+    /*****************IAP界面按钮信号与槽连接*************************************/
+    connect(ui->iapDowOpBtn, &QPushButton::clicked, this, [=]() //串口操作按钮
+    {
+        dowCmdArg.clear();
+        if (!iapConnected)
+        {
+            dowCmdArg.append(ui->iapDowPortName->currentText());  //端口名
+            dowCmdArg.append(ui->iapDowBaudRate->currentText());  //波特率
+            this->packDowCmd(DOW::TYPE::IAP, DOW::Open, dowCmdArg);
+        }
+        else
+        {
+            iapConnected = false;
+            ui->iapDowOpBtn->setText(tr("打开串口"));
+            ui->iapDowReadInfoBtn->setEnabled(false);
+            ui->iapDowFlashBtn->setEnabled(false);
+            ui->iapDowEraseBtn->setEnabled(false);
+            this->packDowCmd(DOW::TYPE::IAP, DOW::Close, dowCmdArg);
+        }
+    });
+    connect(ui->iapDowFlashBtn, &QPushButton::clicked, this, [=]()     //烧录按钮
+    {
+        if (!ui->dowFile->text().isEmpty())
+        {
+            dowCmdArg.clear();
+            dowCmdArg << ui->dowFile->text();
+            this->packDowCmd(DOW::TYPE::IAP, DOW::Flash, dowCmdArg);
+        }
+        else
+        {
+            QMessageBox::warning(this, QString(tr("警告")), QString(tr("无固件")));
+        }
+    });
+    connect(ui->iapDowReadInfoBtn, &QPushButton::clicked, this, [=]()  //读取芯片信息按钮
+    {
+        dowCmdArg.clear();
+        this->packDowCmd(DOW::TYPE::IAP, DOW::ReadInfo, dowCmdArg);
+    });
+    connect(ui->iapDowEraseBtn, &QPushButton::clicked, this, [=]()     //擦除按钮
+    {
+        dowCmdArg.clear();
+        this->packDowCmd(DOW::TYPE::IAP, DOW::Erase, dowCmdArg);
     });
 }
 
@@ -1397,54 +1865,53 @@ void Widget::downloadInit()
  * @brief 发送ISP命令
  * @param cmd ISP命令
  */
-void Widget::ispSendCmd(ISP::CMD cmd)
+void Widget::packDowCmd(DOW::TYPE type, DOW::CMD cmd, QStringList& arg)
 {
     QStringList config;
-    config.append(QString("isp"));                  //传输类型
-    switch (cmd)
-    {
-    case ISP::Flash:
-        config.append(QString("Flash"));
-        break;
-    case ISP::ReadInfo:
-        config.append(QString("ReadInfo"));
-        break;
-    case ISP::Erase:
-        config.append(QString("Erase"));
-        break;
-    default:
-        break;
-    }
-    config.append(QString::number(ui->dowHWBtn->currentIndex()));
-    config.append(ui->dowPortName->currentText());  //端口名
-    config.append(ui->dowBaudRate->currentText());  //波特率
-    emit startDowThread(config);
+    config.append(QString("%1").arg(type));
+    config.append(QString("%1").arg(cmd));
+    config.append(arg);
+    emit sendDowCmd(config);
 }
 
 /**
  * @brief 处理下载线程消息
  * @param msg 消息
  */
-void Widget::dowMsgHandle(const QString& msg)
+void Widget::dowMsgHandle(const DOW::TYPE type,const COMMON_MSG::MSG& msg)
 {
-    if (msg == "openFail") //打开失败
+    switch (msg)
     {
+    case COMMON_MSG::MSG::OpenFail:
+        iapConnected = false;
         QMessageBox::warning(this, tr("警告"), tr("无法打开串口"));
+        break;
+    case COMMON_MSG::MSG::OpenSuccessful:
+        if (type == DOW::TYPE::ISP)
+        {
+            ispConnected = true;
+            ui->ispDowReadInfoBtn->setEnabled(true);
+            ui->ispDowFlashBtn->setEnabled(true);
+            ui->ispDowEraseBtn->setEnabled(true);
+            ui->ispDowOpBtn->setText(tr("关闭串口"));
+        }
+        else if (type == DOW::TYPE::IAP)
+        {
+            iapConnected = true;
+            ui->iapDowReadInfoBtn->setEnabled(true);
+            ui->iapDowFlashBtn->setEnabled(true);
+            ui->iapDowEraseBtn->setEnabled(true);
+            ui->iapDowOpBtn->setText(tr("关闭串口"));
+        }
+        break;
+    case COMMON_MSG::MSG::ProcessDone:
+        ui->dowLogText->moveCursor(QTextCursor::End);  //移动光标到末尾
+        ui->dowLogText->insertPlainText("recText");  //文末追加文本
+        break;
+    default:
+        break;
     }
-    else if (msg == "openSuccessful") //打开成功
-    {
-        dowThread->start();
-        ui->dowLogText->clear();
-        ui->dowLogText->setText("正在连接单片机...");
-    }
-    else if (msg == "syncSuccessful") //同步波特率成功
-    {
-        ui->dowLogText->append("连上单片机成功！！！");
-    }
-    else if (msg == "timeOut")         //单片无响应
-    {
-        ui->dowLogText->append("命令无响应");
-    }
+
 }
 
 /**
@@ -1457,7 +1924,7 @@ void Widget::HexQString_to_QString(QString& source)
     QByteArray temp;
     temp = source.remove(" ").toLatin1();
 
-    //将temp中的16进制数据转化为对应的字符串，比如"31"转换为"1"
+    //将temp中的16进制字符串转化为对应的字符串，比如"31"转换为"1"
     source = QByteArray::fromHex(temp);
 }
 

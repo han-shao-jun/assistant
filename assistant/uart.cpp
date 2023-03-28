@@ -114,7 +114,7 @@ void Uart::run()
         }
         else
         {
-            QThread::usleep(1);     //避免线程占用过多CPU资源
+            QThread::usleep(1);     //避免空操作线程占用过多CPU资源
         }
         mutex.unlock();
     }
