@@ -121,7 +121,7 @@ void Download::doWork(const QStringList& config)
                                 switch (state)
                                 {
                                 case START:
-                                    if (rec.at(0) == 'C')   //收到字符“C"
+                                    if (rec.at(0) == 'C' && rec.size() == 1)   //收到字符“C"
                                     {
                                         data.clear();
                                         Ymodem::PrepareIntialPacket(data, fileInfo.fileName().toStdString().data(), file_size);
@@ -131,6 +131,12 @@ void Download::doWork(const QStringList& config)
                                         qDebug() << "START" << pktNo;
                                         pktNo++;
                                         state = SEND;
+                                    }
+                                    else
+                                    {
+                                        recBuffer.enqueue(rec);
+                                        emit msgSignal(DOW::IAP, COMMON_MSG::MSG::ReciveLog);
+                                        qDebug() << "ReciveLog";
                                     }
                                     break;
                                 case FIRST_SEND:
@@ -236,7 +242,9 @@ void Download::doWork(const QStringList& config)
                         {
                             time_out_cnt++;
                             if (time_out_cnt == 5)
-                                break;
+                            {
+                                session_done = true;
+                            }
                             qDebug() << "time_out";
                         }
                     }

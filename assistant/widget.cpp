@@ -1536,7 +1536,7 @@ void Widget::oscUiInit()
 
 
     //背景网格样式
-    ui->oscCustomPlot->xAxis->grid()->setPen(QPen(QColor(50, 50, 50),1,Qt::SolidLine));
+    ui->oscCustomPlot->xAxis->grid()->setPen(QPen(QColor(50, 50, 50), 1, Qt::SolidLine));
     ui->oscCustomPlot->yAxis->grid()->setPen(QPen(Qt::SolidLine));
     ui->oscCustomPlot->yAxis->grid()->setZeroLinePen(QPen(Qt::yellow, 1));    //y轴0刻度颜色
     ui->oscCustomPlot->xAxis->grid()->setSubGridPen(QPen(QColor(50, 50, 50), 1, Qt::DotLine));//子网格浅色点线
@@ -1744,9 +1744,18 @@ void Widget::downloadInit()
             ui->dowFile->setText(path);
         }
     });
+    connect(ui->dowClearLogBtn, &QPushButton::clicked, this, [=]()
+    {
+        ui->dowLogText->clear();
+    });
+    connect(ui->dowClearSendBtn, &QPushButton::clicked, this, [=]()
+    {
+        ui->dowSendText->clear();
+    });
 
     //置零下载进度
     ui->dowProgressBar->reset();
+
 
     /**************ISP界面*****************************/
     ui->ispDowBaudRate->setCurrentIndex(5);
@@ -1772,7 +1781,7 @@ void Widget::downloadInit()
             dowCmdArg.append(ui->ispDowPortName->currentText());  //端口名
             dowCmdArg.append(ui->ispDowBaudRate->currentText());  //波特率
             dowCmdArg.append(QString::number(ui->ispDowHWBtn->currentIndex()));    //流控
-            this->packDowCmd(DOW::TYPE::ISP, DOW::Open, dowCmdArg);
+            this->dowPackCmd(DOW::TYPE::ISP, DOW::Open, dowCmdArg);
         }
         else
         {
@@ -1782,24 +1791,24 @@ void Widget::downloadInit()
             ui->ispDowFlashBtn->setEnabled(false);
             ui->ispDowEraseBtn->setEnabled(false);
 
-            this->packDowCmd(DOW::TYPE::ISP, DOW::Close, dowCmdArg);
+            this->dowPackCmd(DOW::TYPE::ISP, DOW::Close, dowCmdArg);
         }
     });
     connect(ui->ispDowFlashBtn, &QPushButton::clicked, this, [=]()     //烧录按钮
     {
         dowCmdArg.clear();
         dowCmdArg << ui->dowFile->text();
-        this->packDowCmd(DOW::TYPE::ISP, DOW::Flash, dowCmdArg);
+        this->dowPackCmd(DOW::TYPE::ISP, DOW::Flash, dowCmdArg);
     });
     connect(ui->ispDowReadInfoBtn, &QPushButton::clicked, this, [=]()  //读取芯片信息按钮
     {
         dowCmdArg.clear();
-        this->packDowCmd(DOW::TYPE::ISP, DOW::ReadInfo, dowCmdArg);
+        this->dowPackCmd(DOW::TYPE::ISP, DOW::ReadInfo, dowCmdArg);
     });
     connect(ui->ispDowEraseBtn, &QPushButton::clicked, this, [=]()     //擦除按钮
     {
         dowCmdArg.clear();
-        this->packDowCmd(DOW::TYPE::ISP, DOW::Erase, dowCmdArg);
+        this->dowPackCmd(DOW::TYPE::ISP, DOW::Erase, dowCmdArg);
     });
 
     /**************IAP界面*****************************/
@@ -1824,7 +1833,7 @@ void Widget::downloadInit()
         {
             dowCmdArg.append(ui->iapDowPortName->currentText());  //端口名
             dowCmdArg.append(ui->iapDowBaudRate->currentText());  //波特率
-            this->packDowCmd(DOW::TYPE::IAP, DOW::Open, dowCmdArg);
+            this->dowPackCmd(DOW::TYPE::IAP, DOW::Open, dowCmdArg);
         }
         else
         {
@@ -1833,7 +1842,7 @@ void Widget::downloadInit()
             ui->iapDowReadInfoBtn->setEnabled(false);
             ui->iapDowFlashBtn->setEnabled(false);
             ui->iapDowEraseBtn->setEnabled(false);
-            this->packDowCmd(DOW::TYPE::IAP, DOW::Close, dowCmdArg);
+            this->dowPackCmd(DOW::TYPE::IAP, DOW::Close, dowCmdArg);
         }
     });
     connect(ui->iapDowFlashBtn, &QPushButton::clicked, this, [=]()     //烧录按钮
@@ -1842,7 +1851,7 @@ void Widget::downloadInit()
         {
             dowCmdArg.clear();
             dowCmdArg << ui->dowFile->text();
-            this->packDowCmd(DOW::TYPE::IAP, DOW::Flash, dowCmdArg);
+            this->dowPackCmd(DOW::TYPE::IAP, DOW::Flash, dowCmdArg);
         }
         else
         {
@@ -1852,12 +1861,12 @@ void Widget::downloadInit()
     connect(ui->iapDowReadInfoBtn, &QPushButton::clicked, this, [=]()  //读取芯片信息按钮
     {
         dowCmdArg.clear();
-        this->packDowCmd(DOW::TYPE::IAP, DOW::ReadInfo, dowCmdArg);
+        this->dowPackCmd(DOW::TYPE::IAP, DOW::ReadInfo, dowCmdArg);
     });
     connect(ui->iapDowEraseBtn, &QPushButton::clicked, this, [=]()     //擦除按钮
     {
         dowCmdArg.clear();
-        this->packDowCmd(DOW::TYPE::IAP, DOW::Erase, dowCmdArg);
+        this->dowPackCmd(DOW::TYPE::IAP, DOW::Erase, dowCmdArg);
     });
 }
 
@@ -1865,7 +1874,7 @@ void Widget::downloadInit()
  * @brief 发送ISP命令
  * @param cmd ISP命令
  */
-void Widget::packDowCmd(DOW::TYPE type, DOW::CMD cmd, QStringList& arg)
+void Widget::dowPackCmd(DOW::TYPE type, DOW::CMD cmd, QStringList& arg)
 {
     QStringList config;
     config.append(QString("%1").arg(type));
@@ -1878,8 +1887,9 @@ void Widget::packDowCmd(DOW::TYPE type, DOW::CMD cmd, QStringList& arg)
  * @brief 处理下载线程消息
  * @param msg 消息
  */
-void Widget::dowMsgHandle(const DOW::TYPE type,const COMMON_MSG::MSG& msg)
+void Widget::dowMsgHandle(const DOW::TYPE type, const COMMON_MSG::MSG& msg)
 {
+    QByteArray text;
     switch (msg)
     {
     case COMMON_MSG::MSG::OpenFail:
@@ -1904,9 +1914,10 @@ void Widget::dowMsgHandle(const DOW::TYPE type,const COMMON_MSG::MSG& msg)
             ui->iapDowOpBtn->setText(tr("关闭串口"));
         }
         break;
-    case COMMON_MSG::MSG::ProcessDone:
+    case COMMON_MSG::MSG::ReciveLog:
         ui->dowLogText->moveCursor(QTextCursor::End);  //移动光标到末尾
-        ui->dowLogText->insertPlainText("recText");  //文末追加文本
+        text = dowThreadWork->recBuffer.dequeue();
+        ui->dowLogText->insertPlainText(text);  //文末追加文本
         break;
     default:
         break;
