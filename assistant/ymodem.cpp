@@ -105,7 +105,7 @@ void Ymodem::PrepareIntialPacket(QByteArray& data, const char *fileName, const u
     i = i + PACKET_HEADER + 1;
 
     /* 文件大小转换成字符 */
-    len_str = QString::number(length, 16);
+    len_str = QString::number(length, 10);
     data.append(len_str);
     i += len_str.size();
 

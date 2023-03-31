@@ -8,11 +8,12 @@
 #include "def.h"
 #include "ymodem.h"
 
-#define START 0x00
-#define SEND  0x01
+#define BEGIN 0x00
+#define START 0x01
 #define FIRST_SEND  0x02
-#define END_CHECK 0x03
-#define END  0x04
+#define SEND  0x03
+#define END_CHECK 0x04
+#define END  0x05
 
 /**
  * @brief ISP命令
@@ -58,6 +59,7 @@ protected:
 private:
     QMutex mutex;
     bool isConnected = false;
+    bool session_done = false;
     QSerialPort *port = nullptr;         //将要打开的串口端口
     QString flowControl;
     quint8 type{}, cmd{};

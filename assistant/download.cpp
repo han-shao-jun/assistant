@@ -64,7 +64,7 @@ void Download::doWork(const QStringList& config)
                 port = new QSerialPort();
                 port->setPortName(config[2].section(':', 0, 0));
                 port->setBaudRate(config[3].toInt());        //波特率
-                port->setParity(QSerialPort::EvenParity);    //校验位
+                port->setParity(QSerialPort::NoParity);      //校验位
                 port->setDataBits(QSerialPort::Data8);       //数据位
                 port->setStopBits(QSerialPort::OneStop);     //停止位
                 port->setFlowControl(QSerialPort::NoFlowControl);
@@ -90,16 +90,17 @@ void Download::doWork(const QStringList& config)
             qDebug() << "Flash";
             if (isConnected)
             {
-                quint8 state = 0;
+                quint8 state = BEGIN;
                 quint8 pktNo = 0;
                 quint8 time_out_cnt = 0;
                 qint64 file_size;
-                quint8 end_cnt = 0;
                 QFileInfo fileInfo(config[2]);
                 QByteArray data;
                 QByteArray SourceBuf;
+                quint32 data_size = 0;
                 QFile file(config[2]);
-                bool session_done = false;
+                session_done = false;
+                bool is_cmd = false;
 
                 file_size = fileInfo.size();
                 if (file.open(QIODevice::ReadOnly))
@@ -111,130 +112,96 @@ void Download::doWork(const QStringList& config)
                             time_out_cnt = 0;
                             QByteArray rec = port->readAll();
 
+                            qDebug() << "rec" << rec;
                             if (rec.at(0) == ABORT1 || rec.at(0) == ABORT2)
                             {
+                                session_done = true;
                                 qDebug() << "abort by user";
-                                break;
                             }
                             else
                             {
                                 switch (state)
                                 {
-                                case START:
-                                    if (rec.at(0) == 'C' && rec.size() == 1)   //收到字符“C"
+                                case BEGIN:
+                                    if (rec.size() == 1 && rec.at(0) == CRC16)   //收到字符“C"
                                     {
-                                        data.clear();
-                                        Ymodem::PrepareIntialPacket(data, fileInfo.fileName().toStdString().data(), file_size);
-                                        port->write(data);
-                                        port->flush();  //刷新下缓冲区，使串口立即发送
-                                        port->waitForBytesWritten(1);
-                                        qDebug() << "START" << pktNo;
-                                        pktNo++;
-                                        state = SEND;
-                                    }
-                                    else
-                                    {
-                                        recBuffer.enqueue(rec);
-                                        emit msgSignal(DOW::IAP, COMMON_MSG::MSG::ReciveLog);
-                                        qDebug() << "ReciveLog";
+                                        state = START;
                                     }
                                     break;
-                                case FIRST_SEND:
-                                    if (rec.size() == 2)
+                                case START:
+                                    if (rec.at(0) == NAK) //收到NAK和字符“C"，重发
                                     {
-                                        if (rec.at(0) == ACK && rec.at(1) == 'C')
-                                        {
-                                            data.clear();
-                                            if (file_size >= PACKET_1K_SIZE)    //大于等于1024
-                                            {
-                                                SourceBuf = file.read(PACKET_1K_SIZE);
-                                                Ymodem::PrepareDataPacket(SourceBuf, data, pktNo, PACKET_1K_SIZE);
-                                                file_size -= PACKET_1K_SIZE;
-                                                if (file_size == 0) //等于1024
-                                                {
-                                                    state = END_CHECK;
-                                                }
-                                            }
-                                            else    //小于1024,一包可以发完
-                                            {
-                                                SourceBuf = file.read(file_size);
-                                                Ymodem::PrepareDataPacket(SourceBuf, data, pktNo, file_size);
-                                                state = END_CHECK;
-                                            }
-                                            port->write(data);
-                                            port->flush();      //刷新下缓冲区，使串口立即发送
-                                            port->waitForBytesWritten(1);
-                                            qDebug() << "FIRST_SEND" << pktNo;
-                                            pktNo++;
-                                        }
+                                        state = START;
+                                    }
+                                    else if (rec.at(0) == ACK) //收到ACK和字符“C"，转移到发送数据包
+                                    {
+                                        state = SEND;
                                     }
                                     break;
                                 case SEND:
-                                    if (rec.at(0) == ACK)
+                                    if (file_size == 0)
                                     {
-                                        data.clear();
-                                        if (file_size >= PACKET_1K_SIZE)    //大于等于1024
-                                        {
-                                            SourceBuf = file.read(PACKET_1K_SIZE);
-                                            Ymodem::PrepareDataPacket(SourceBuf, data, pktNo, PACKET_1K_SIZE);
-                                            file_size -= PACKET_1K_SIZE;
-                                            if (file_size == 0) //等于1024
-                                            {
-                                                state = END_CHECK;
-                                            }
-                                        }
-                                        else    //小于1024,一包可以发完
-                                        {
-                                            SourceBuf = file.read(file_size);
-                                            Ymodem::PrepareDataPacket(SourceBuf, data, pktNo, file_size);
-                                            state = END_CHECK;
-                                        }
-                                        port->write(data);
-                                        port->flush();      //刷新下缓冲区，使串口立即发送
-                                        port->waitForBytesWritten(1);
-                                        qDebug() << "SEND" << pktNo;
-                                        pktNo++;
+                                        state = END_CHECK;
                                     }
                                     break;
                                 case END_CHECK:
-                                    if (rec.at(0) == ACK && end_cnt == 0)
+                                    if (rec.at(0) == ACK)
                                     {
-                                        data.clear();
-                                        data.append(EOT);
-                                        port->write(data);
-                                        port->flush();      //刷新下缓冲区，使串口立即发送
-                                        port->waitForBytesWritten(1);
-                                        qDebug() << "END_CHECK" << end_cnt;
-                                        end_cnt = 1;
-                                    }
-                                    else if (rec.at(0) == NAK && end_cnt == 1)
-                                    {
-                                        data.clear();
-                                        data.append(EOT);
-                                        port->write(data);
-                                        port->flush();      //刷新下缓冲区，使串口立即发送
-                                        port->waitForBytesWritten(1);
-                                        qDebug() << "END_CHECK" << end_cnt;
                                         state = END;
                                     }
                                     break;
                                 case END:
-                                    if (rec.size() >= 2)
+                                    session_done = true;
+                                default:
+                                    break;
+                                }
+
+                                data.clear();
+                                switch (state)
+                                {
+                                case START:
+                                    Ymodem::PrepareIntialPacket(data, fileInfo.fileName().toStdString().data(), file_size);
+                                    qDebug() << "START" << pktNo;
+                                    break;
+                                case SEND:
+                                    if (rec.at(0) == ACK)   //应答
                                     {
-                                        if (rec.at(0) == ACK && rec.at(1) == 'C')
+                                        qDebug() << file_size;
+                                        if (file_size >= PACKET_1K_SIZE)    //剩余数据大于等于1024字节
                                         {
-                                            data.clear();
-                                            Ymodem::PrepareEndPacket(data);
-                                            port->write(data);
-                                            port->flush();      //刷新下缓冲区，使串口立即发送
-                                            port->waitForBytesWritten(1);
-                                            qDebug() << "END";
-                                            session_done = true;
+                                            SourceBuf = file.read(PACKET_1K_SIZE);
+                                            data_size = PACKET_1K_SIZE;
+                                            pktNo++;
+                                            file_size -= PACKET_1K_SIZE;
+                                        }
+                                        else if (file_size != 0)    //还有剩余数据但小于1024字节
+                                        {
+                                            SourceBuf = file.read(file_size);
+                                            data_size = file_size;
+                                            pktNo++;
+                                            file_size = 0;
                                         }
                                     }
+                                    Ymodem::PrepareDataPacket(SourceBuf, data, pktNo, data_size);
+                                    qDebug() << "SEND" << pktNo;
+                                    break;
+                                case END_CHECK:
+                                    data.append(EOT);
+                                    qDebug() << "END_CHECK";
+                                    break;
+                                case END:
+                                    Ymodem::PrepareEndPacket(data);
+                                    session_done = true;
+                                    qDebug() << "END";
                                     break;
                                 default:
                                     break;
+                                }
+                                if (state != BEGIN)
+                                {
+                                    port->write(data);
+                                    port->flush();      //刷新下缓冲区，使串口立即发送
+                                    port->waitForBytesWritten(1);
                                 }
                             }
                         }

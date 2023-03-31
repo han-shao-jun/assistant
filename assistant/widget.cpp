@@ -1744,11 +1744,11 @@ void Widget::downloadInit()
             ui->dowFile->setText(path);
         }
     });
-    connect(ui->dowClearLogBtn, &QPushButton::clicked, this, [=]()
+    connect(ui->dowClearLogBtn, &QPushButton::clicked, this, [=]()  //清除接收日志文本
     {
         ui->dowLogText->clear();
     });
-    connect(ui->dowClearSendBtn, &QPushButton::clicked, this, [=]()
+    connect(ui->dowClearSendBtn, &QPushButton::clicked, this, [=]() //清空发送文本
     {
         ui->dowSendText->clear();
     });
