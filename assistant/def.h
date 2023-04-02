@@ -50,7 +50,8 @@ namespace COMMON_MSG
         SyncSuccessful,     //同步成功
         TimeOut,            //超时
         ProcessDone,        //处理完成
-        ReciveLog,          //接收到日志打印
+        ProcessIng,         //处理中
+        Log,                //日志打印
     };
 }
 

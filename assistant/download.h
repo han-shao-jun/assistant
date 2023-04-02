@@ -15,6 +15,8 @@
 #define END_CHECK 0x04
 #define END  0x05
 
+
+
 /**
  * @brief ISP命令
  */
@@ -45,26 +47,27 @@ public:
     explicit Download(QObject *parent = nullptr);
     ~Download() override;
     QQueue<QByteArray> recBuffer;      //要打印显示的信息
-    QQueue<QByteArray> recCopy;        //接收到的原始信息
 
 public slots:
     void doWork(const QStringList& config);
-
+    void endSeddion();
 
 signals:
-    void msgSignal(const DOW::TYPE type, const COMMON_MSG::MSG& msg);
+    void msgSignal(const DOW::TYPE type, const COMMON_MSG::MSG& msg, const QStringList& arg);
 
 protected:
 
 private:
     QMutex mutex;
     bool isConnected = false;
-    bool session_done = false;
+    bool session_done = true;
     QSerialPort *port = nullptr;         //将要打开的串口端口
     QString flowControl;
     quint8 type{}, cmd{};
+
     QTimer timer;
     QStringList configCopy;
+    QStringList arg;
 };
 
 

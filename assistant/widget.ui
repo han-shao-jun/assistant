@@ -2674,7 +2674,7 @@ p, li { white-space: pre-wrap; }
          </property>
          <widget class="QWidget" name="STM32ISP">
           <attribute name="title">
-           <string>STM32-DOW</string>
+           <string>STM32-ISP</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_5">
            <item>

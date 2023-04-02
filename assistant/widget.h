@@ -62,8 +62,9 @@ Q_SIGNALS:
     void sendOscDateSignal(const QByteArray& sendText);
 
     void sendDowCmd(const QStringList &config);
+    void sendDowPortCmd(const QStringList &config);
     void closeDowThread();
-    void sendDowDateSignal(const QByteArray& sendText);
+
 
 private slots:
     void menuBtnClicked();
@@ -80,7 +81,7 @@ private slots:
     void oscMsgHandle(const COMMON_MSG::MSG& msg);
     void oscSendDate();
 
-    void dowMsgHandle(const DOW::TYPE type, const COMMON_MSG::MSG& msg);
+    void dowMsgHandle(const DOW::TYPE& type, const COMMON_MSG::MSG& msg, const QStringList& arg);
 
 private:
     Ui::Widget *ui;
@@ -194,7 +195,9 @@ private:
     QThread *dowThread;
     Download *dowThreadWork;
     bool ispConnected = false;
+    bool ispProcessIng = false;
     bool iapConnected = false;
+    bool iapProcessIng = false;
     QStringList dowCmdArg;
 };
 

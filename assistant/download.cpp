@@ -3,6 +3,9 @@
 #include <QFileInfo>
 
 
+QQueue<QByteArray> recCopy;        //接收到的原始信息
+QQueue<QByteArray> recBuff;        //接收到的原始信息
+
 Download::Download(QObject *parent) : QObject(parent)
 {
 
@@ -19,6 +22,16 @@ Download::~Download()
     }
 }
 
+
+void Download::endSeddion()
+{
+    if (!session_done)
+    {
+        session_done = true;
+    }
+}
+
+
 /**
  * @brief 接收主线程下载通信配置
  * @param config 配置字符串列表
@@ -27,7 +40,6 @@ void Download::doWork(const QStringList& config)
 {
     qDebug() << config;
     qDebug() << "doWork id: " << QThread::currentThreadId();
-
 
     //通信协议
     type = config[0].toUInt();
@@ -75,12 +87,16 @@ void Download::doWork(const QStringList& config)
                         isConnected = false;
                         delete port;
                         port = nullptr;
-                        emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::OpenFail);
+                        arg.clear();
+                        arg.append(QString("OpenFail"));
+                        emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::OpenFail, arg);
                     }
                     else
                     {
                         isConnected = true;
-                        emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::OpenSuccessful);
+                        arg.clear();
+                        arg.append(QString("OpenSuccessful"));
+                        emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::OpenSuccessful, arg);
                     }
                 }
             }
@@ -100,9 +116,15 @@ void Download::doWork(const QStringList& config)
                 quint32 data_size = 0;
                 QFile file(config[2]);
                 session_done = false;
-                bool is_cmd = false;
+
+                arg.clear();
+                emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::ProcessIng, arg);
 
                 file_size = fileInfo.size();
+                arg.clear();
+                arg.append(QString("IAP:固件大小%1字节\r\n").arg(file_size));
+                arg.append(QString("IAP:预计发送%1个固件数据包\r\n").arg((file_size/PACKET_1K_SIZE) + !(!(file_size%PACKET_1K_SIZE))));
+                emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::Log, arg);
                 if (file.open(QIODevice::ReadOnly))
                 {
                     while (!session_done)
@@ -116,7 +138,6 @@ void Download::doWork(const QStringList& config)
                             if (rec.at(0) == ABORT1 || rec.at(0) == ABORT2)
                             {
                                 session_done = true;
-                                qDebug() << "abort by user";
                             }
                             else
                             {
@@ -157,16 +178,17 @@ void Download::doWork(const QStringList& config)
                                 }
 
                                 data.clear();
+                                arg.clear();
                                 switch (state)
                                 {
                                 case START:
                                     Ymodem::PrepareIntialPacket(data, fileInfo.fileName().toStdString().data(), file_size);
-                                    qDebug() << "START" << pktNo;
+                                    arg.append(QString("IAP:发送固件信息包\r\n"));
+                                    emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::Log, arg);
                                     break;
                                 case SEND:
                                     if (rec.at(0) == ACK)   //应答
                                     {
-                                        qDebug() << file_size;
                                         if (file_size >= PACKET_1K_SIZE)    //剩余数据大于等于1024字节
                                         {
                                             SourceBuf = file.read(PACKET_1K_SIZE);
@@ -181,18 +203,26 @@ void Download::doWork(const QStringList& config)
                                             pktNo++;
                                             file_size = 0;
                                         }
+                                        arg.append(QString("IAP:发送第%1个固件数据包\r\n").arg(pktNo));
+                                        emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::Log, arg);
+                                    }
+                                    else
+                                    {
+                                        arg.append(QString("IAP:第%1个固件数据包重发\r\n").arg(pktNo));
+                                        emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::Log, arg);
                                     }
                                     Ymodem::PrepareDataPacket(SourceBuf, data, pktNo, data_size);
-                                    qDebug() << "SEND" << pktNo;
                                     break;
                                 case END_CHECK:
                                     data.append(EOT);
-                                    qDebug() << "END_CHECK";
+                                    arg.append(QString("IAP:发送结束确认包\r\n"));
+                                    emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::Log, arg);
                                     break;
                                 case END:
                                     Ymodem::PrepareEndPacket(data);
                                     session_done = true;
-                                    qDebug() << "END";
+                                    arg.append(QString("IAP:发送结束包\r\n"));
+                                    emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::Log, arg);
                                     break;
                                 default:
                                     break;
@@ -212,13 +242,19 @@ void Download::doWork(const QStringList& config)
                             {
                                 session_done = true;
                             }
-                            qDebug() << "time_out";
+                            arg.clear();
+                            arg.append(QString("IAP:超时\r\n"));
+                            emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::Log, arg);
                         }
                     }
+                    qDebug() << "ProcessDone";
+                    emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::ProcessDone, arg);
                 }
                 else
                 {
-                    qDebug() << "file open fail";
+                    arg.clear();
+                    arg.append(QString("IAP:打开固件失败\r\n"));
+                    emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::Log, arg);
                 }
             }
         }
@@ -255,6 +291,9 @@ void Download::doWork(const QStringList& config)
         }
     }
 }
+
+
+
 
 
 

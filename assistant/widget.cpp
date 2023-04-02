@@ -1776,23 +1776,23 @@ void Widget::downloadInit()
     connect(ui->ispDowOpBtn, &QPushButton::clicked, this, [=]() //串口操作按钮
     {
         dowCmdArg.clear();
-        if (!ispConnected)
+        dowCmdArg.append(QString("%1").arg(DOW::TYPE::ISP));
+        if (!ispConnected)  //串口关闭需要打开
         {
+            dowCmdArg.append(QString('1'));
             dowCmdArg.append(ui->ispDowPortName->currentText());  //端口名
             dowCmdArg.append(ui->ispDowBaudRate->currentText());  //波特率
-            dowCmdArg.append(QString::number(ui->ispDowHWBtn->currentIndex()));    //流控
-            this->dowPackCmd(DOW::TYPE::ISP, DOW::Open, dowCmdArg);
         }
-        else
+        else    //串口已经打开需要关闭
         {
             ispConnected = false;
             ui->ispDowOpBtn->setText(tr("打开串口"));
             ui->ispDowReadInfoBtn->setEnabled(false);
             ui->ispDowFlashBtn->setEnabled(false);
             ui->ispDowEraseBtn->setEnabled(false);
-
-            this->dowPackCmd(DOW::TYPE::ISP, DOW::Close, dowCmdArg);
+            dowCmdArg.append(QString('0'));
         }
+        emit sendDowPortCmd(dowCmdArg);
     });
     connect(ui->ispDowFlashBtn, &QPushButton::clicked, this, [=]()     //烧录按钮
     {
@@ -1829,21 +1829,22 @@ void Widget::downloadInit()
     connect(ui->iapDowOpBtn, &QPushButton::clicked, this, [=]() //串口操作按钮
     {
         dowCmdArg.clear();
-        if (!iapConnected)
+        if (!iapConnected)  //串口关闭需要打开
         {
             dowCmdArg.append(ui->iapDowPortName->currentText());  //端口名
             dowCmdArg.append(ui->iapDowBaudRate->currentText());  //波特率
-            this->dowPackCmd(DOW::TYPE::IAP, DOW::Open, dowCmdArg);
+            dowPackCmd(DOW::TYPE::IAP, DOW::CMD::Open, dowCmdArg);
         }
-        else
+        else    //串口已经打开需要关闭
         {
             iapConnected = false;
             ui->iapDowOpBtn->setText(tr("打开串口"));
             ui->iapDowReadInfoBtn->setEnabled(false);
             ui->iapDowFlashBtn->setEnabled(false);
             ui->iapDowEraseBtn->setEnabled(false);
-            this->dowPackCmd(DOW::TYPE::IAP, DOW::Close, dowCmdArg);
+            dowPackCmd(DOW::TYPE::IAP, DOW::CMD::Close, dowCmdArg);
         }
+
     });
     connect(ui->iapDowFlashBtn, &QPushButton::clicked, this, [=]()     //烧录按钮
     {
@@ -1887,9 +1888,8 @@ void Widget::dowPackCmd(DOW::TYPE type, DOW::CMD cmd, QStringList& arg)
  * @brief 处理下载线程消息
  * @param msg 消息
  */
-void Widget::dowMsgHandle(const DOW::TYPE type, const COMMON_MSG::MSG& msg)
+void Widget::dowMsgHandle(const DOW::TYPE& type, const COMMON_MSG::MSG& msg, const QStringList& arg)
 {
-    QByteArray text;
     switch (msg)
     {
     case COMMON_MSG::MSG::OpenFail:
@@ -1897,6 +1897,7 @@ void Widget::dowMsgHandle(const DOW::TYPE type, const COMMON_MSG::MSG& msg)
         QMessageBox::warning(this, tr("警告"), tr("无法打开串口"));
         break;
     case COMMON_MSG::MSG::OpenSuccessful:
+        qDebug() << "OpenSuccessful" << type;
         if (type == DOW::TYPE::ISP)
         {
             ispConnected = true;
@@ -1914,10 +1915,32 @@ void Widget::dowMsgHandle(const DOW::TYPE type, const COMMON_MSG::MSG& msg)
             ui->iapDowOpBtn->setText(tr("关闭串口"));
         }
         break;
-    case COMMON_MSG::MSG::ReciveLog:
-        ui->dowLogText->moveCursor(QTextCursor::End);  //移动光标到末尾
-        text = dowThreadWork->recBuffer.dequeue();
-        ui->dowLogText->insertPlainText(text);  //文末追加文本
+    case COMMON_MSG::ProcessIng:
+        if (type == DOW::ISP)
+        {
+            ispProcessIng = true;
+        }
+        else if (type == DOW::IAP)
+        {
+            iapProcessIng = true;
+        }
+        break;
+    case COMMON_MSG::ProcessDone:
+        if (type == DOW::ISP)
+        {
+            ispProcessIng = false;
+        }
+        else if (type == DOW::IAP)
+        {
+            iapProcessIng = false;
+        }
+    case COMMON_MSG::MSG::Log:
+        for (const auto & str : arg)
+        {
+            ui->dowLogText->moveCursor(QTextCursor::End);  //移动光标到末尾
+            ui->dowLogText->insertPlainText(str);  //文末追加文本
+        }
+
         break;
     default:
         break;
