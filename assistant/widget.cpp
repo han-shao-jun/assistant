@@ -1842,9 +1842,12 @@ void Widget::downloadInit()
             ui->iapDowReadInfoBtn->setEnabled(false);
             ui->iapDowFlashBtn->setEnabled(false);
             ui->iapDowEraseBtn->setEnabled(false);
+            if (iapProcessIng)
+            {
+                emit closeDowThread();
+            }
             dowPackCmd(DOW::TYPE::IAP, DOW::CMD::Close, dowCmdArg);
         }
-
     });
     connect(ui->iapDowFlashBtn, &QPushButton::clicked, this, [=]()     //烧录按钮
     {
@@ -1922,6 +1925,7 @@ void Widget::dowMsgHandle(const DOW::TYPE& type, const COMMON_MSG::MSG& msg, con
         }
         else if (type == DOW::IAP)
         {
+            setDowUiIsEnabled(DOW::TYPE::IAP, false);
             iapProcessIng = true;
         }
         break;
@@ -1932,21 +1936,40 @@ void Widget::dowMsgHandle(const DOW::TYPE& type, const COMMON_MSG::MSG& msg, con
         }
         else if (type == DOW::IAP)
         {
+            setDowUiIsEnabled(DOW::TYPE::IAP, true);
             iapProcessIng = false;
         }
+        break;
     case COMMON_MSG::MSG::Log:
         for (const auto & str : arg)
         {
             ui->dowLogText->moveCursor(QTextCursor::End);  //移动光标到末尾
             ui->dowLogText->insertPlainText(str);  //文末追加文本
         }
-
         break;
     default:
         break;
     }
-
 }
+
+void Widget::setDowUiIsEnabled(DOW::TYPE type, bool stste)
+{
+    if (type == DOW::TYPE::ISP)
+    {
+        ui->ispDowOpBtn->setEnabled(stste);
+        ui->ispDowFlashBtn->setEnabled(stste);
+        ui->ispDowEraseBtn->setEnabled(stste);
+        ui->ispDowReadInfoBtn->setEnabled(stste);
+    }
+    else if(type == DOW::TYPE::IAP)
+    {
+        ui->iapDowOpBtn->setEnabled(stste);
+        ui->iapDowFlashBtn->setEnabled(stste);
+        ui->iapDowEraseBtn->setEnabled(stste);
+        ui->iapDowReadInfoBtn->setEnabled(stste);
+    }
+}
+
 
 /**
  * @brief hex字符串转为ascii字符串
@@ -1976,5 +1999,6 @@ void Widget::QByteArray_to_HexQByteArray(QByteArray& source)
         source.insert((3 * i + 2), ' '); //插入空格字符串便于区分一个字节
     }
 }
+
 
 

@@ -129,7 +129,7 @@ void Download::doWork(const QStringList& config)
                 {
                     while (!session_done)
                     {
-                        if (port->waitForReadyRead())
+                        if (port->waitForReadyRead(150))
                         {
                             time_out_cnt = 0;
                             QByteArray rec = port->readAll();
@@ -173,6 +173,7 @@ void Download::doWork(const QStringList& config)
                                     break;
                                 case END:
                                     session_done = true;
+                                    break;
                                 default:
                                     break;
                                 }
@@ -184,6 +185,7 @@ void Download::doWork(const QStringList& config)
                                 case START:
                                     Ymodem::PrepareIntialPacket(data, fileInfo.fileName().toStdString().data(), file_size);
                                     arg.append(QString("IAP:发送固件信息包\r\n"));
+                                    arg.append(QString("IAP:等待擦除FLASH\r\n"));
                                     emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::Log, arg);
                                     break;
                                 case SEND:
@@ -220,9 +222,10 @@ void Download::doWork(const QStringList& config)
                                     break;
                                 case END:
                                     Ymodem::PrepareEndPacket(data);
-                                    session_done = true;
                                     arg.append(QString("IAP:发送结束包\r\n"));
+                                    arg.append(QString("IAP:下载完成\r\n"));
                                     emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::Log, arg);
+                                    session_done = true;
                                     break;
                                 default:
                                     break;
@@ -237,17 +240,21 @@ void Download::doWork(const QStringList& config)
                         }
                         else
                         {
-                            time_out_cnt++;
-                            if (time_out_cnt == 5)
+                            if ((state != BEGIN) && (state != START))
                             {
-                                session_done = true;
+                                time_out_cnt++;
+                                if (time_out_cnt == 5)
+                                {
+                                    session_done = true;
+                                }
+                                arg.clear();
+                                arg.append(QString("IAP:超时，未收到任何反馈\r\n"));
+                                emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::Log, arg);
                             }
-                            arg.clear();
-                            arg.append(QString("IAP:超时\r\n"));
-                            emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::Log, arg);
                         }
                     }
-                    qDebug() << "ProcessDone";
+                    arg.clear();
+                    arg.append(QString("IAP:ProcessDone\r\n"));
                     emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::ProcessDone, arg);
                 }
                 else

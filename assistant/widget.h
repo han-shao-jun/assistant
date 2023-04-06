@@ -104,7 +104,7 @@ private:
     void setOscConfigUiIsEnabled(bool state);
     void oscConnectUiIsEnabled(bool state);
     void dowPackCmd(DOW::TYPE type, DOW::CMD cmd, QStringList& arg);
-
+    void setDowUiIsEnabled(DOW::TYPE type, bool stste);
 
     int widgetIndex = 0;
     int widgetIndexLast = 0;
