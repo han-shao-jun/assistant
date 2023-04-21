@@ -189,7 +189,7 @@ void OSC::write(const QByteArray& msg)
  * @note 用于在下拉选项列表中显示本地ipAddress
  * @return ipAddress字符串列表
  */
-QStringList OSC::getAllLocalIp()
+QStringList OSC:: getAllLocalIp()
 {
     QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
     QStringList ipAddress;

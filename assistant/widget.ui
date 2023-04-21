@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>930</width>
-    <height>775</height>
+    <width>945</width>
+    <height>760</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -2516,7 +2516,7 @@ p, li { white-space: pre-wrap; }
            </widget>
           </item>
           <item row="0" column="2">
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="oscClearBtn">
             <property name="text">
              <string>清除</string>
             </property>
@@ -3088,7 +3088,7 @@ p, li { white-space: pre-wrap; }
               <item row="0" column="0">
                <widget class="QLabel" name="label_2">
                 <property name="text">
-                 <string>接口型号</string>
+                 <string>芯片型号</string>
                 </property>
                </widget>
               </item>
@@ -3098,7 +3098,7 @@ p, li { white-space: pre-wrap; }
               <item row="1" column="0">
                <widget class="QLabel" name="label">
                 <property name="text">
-                 <string>芯片型号</string>
+                 <string>接口型号</string>
                 </property>
                </widget>
               </item>

@@ -1,6 +1,6 @@
 #include "widget.h"
 #include "ui_widget.h"
-#include <cstdlib>
+
 
 Widget::Widget(QWidget *parent)
         : QWidget(parent), ui(new Ui::Widget)
@@ -1416,7 +1416,7 @@ void Widget::oscUiInit()
 
 
     ui->oscIp->setEditable(true);                  // 使下拉选框可以编辑
-    ui->oscIp->addItems(OSC::getAllLocalIp()); // 更新可用IP
+    ui->oscIp->addItems(OSC::getAllLocalIp());     // 更新可用IP
 
     /*************网络通信界面UI控件信号与槽连接**********************/
     connect(ui->oscProtocol, &QComboBox::currentTextChanged, this, [=]()
@@ -1661,23 +1661,21 @@ void Widget::oscMsgHandle(const COMMON_MSG::MSG& msg)
             QByteArray recText = oscThread->recBuffer.dequeue(); // 获取接收缓冲区的数据
             QVector<double> xData, yData;
 
-            qDebug() << "size" << recText.size();
-            qDebug() << recText;
+            //  qDebug() << "size" << recText.size();
+            // qDebug() << recText;
             for (int i = 0; i < recText.size(); i++)
             {
                 xData.append(i);
                 yData.append(static_cast<quint8>(recText[i]));  //只能获取字符型，需要转换
             }
-            qDebug() << yData;
-            qDebug() << "yData[0]" << yData[0];
-            ui->oscCustomPlot->graph(0)->setData(xData, yData); // 添加数据到对应曲线（带清空数据）
+            // qDebug() << yData;
+            // qDebug() << "yData" << yData;
+            ui->oscCustomPlot->graph(0)->setData(xData, yData); // 添加数据到对应曲线（带清空数据容器）
 
             // // 自动设定y轴的范围，如果不设定，有可能看不到图像
             // // 也可以用ui->oscCustomPlot->yAxis->setRange(up,low)手动设定y轴范围
 
             ui->oscCustomPlot->replot();                // 刷新图形
-
-            ui->recLabel->setText(QString("接收字节数:%1").arg(recText.size()));
         }
         else
         {
@@ -1708,23 +1706,23 @@ void Widget::oscSendDate()
     QByteArray sendText;
     sendText = ui->oscSendText->toPlainText().toUtf8();
 
-    // if (ui->netSendNewlineBtn->checkState() == Qt::Checked) // 发送新行被选中
-    //     sendText += '\n';
+    if (ui->netSendNewlineBtn->checkState() == Qt::Checked) // 发送新行被选中
+        sendText += '\n';
 
-    // if (ui->netSendHexBtn->isChecked()) // 16进制发送
-    //     sendText = sendText.toHex();
+    if (ui->netSendHexBtn->isChecked()) // 16进制发送
+        sendText = sendText.toHex();
 
 
-    // uint16_t N = 512; // 采样点数
-    // float sample_freq     = 120.0f;                     // 采样频率 120 Hz, 大于两倍的最高频率
-    // float sample_interval = 1 / sample_freq;            // 采样间隔0.008333步长
-    // float t               = 0;
+    uint16_t N = 512; // 采样点数
+    float sample_freq     = 120.0f;                     // 采样频率 120 Hz, 大于两倍的最高频率
+    float sample_interval = 1 / sample_freq;            // 采样间隔0.008333步长
+    float t               = 0;
 
-    // for (int i = 0; i < N; ++i)
-    // {
-    //     t += sample_interval;
-    //     sendText.append((uint8_t)(100 * (sin(2 * M_PI * t) + 1)) + 1); //加1保证数据不为0，否者上位机认为无效数据
-    // }
+    for (int i = 0; i < N; ++i)
+    {
+        t += sample_interval;
+        sendText.append((uint8_t)(100 * (sin(2 * M_PI * t) + 1)) + 1); //加1保证数据不为0，否者上位机认为无效数据
+    }
 
     emit sendOscDateSignal(sendText);
     sendBytes += sendText.length(); // 累加发送字符字节数
