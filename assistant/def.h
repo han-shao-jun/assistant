@@ -52,6 +52,7 @@ namespace COMMON_MSG
         ProcessDone,        //处理完成
         ProcessIng,         //处理中
         Log,                //日志打印
+        Progress,           //进度消息
     };
 }
 

@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>945</width>
-    <height>760</height>
+    <width>1028</width>
+    <height>802</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1028</width>
+    <height>802</height>
+   </size>
   </property>
   <property name="maximumSize">
    <size>
@@ -19,7 +25,7 @@
   <property name="windowTitle">
    <string>Widget</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
     <number>0</number>
    </property>
@@ -40,7 +46,7 @@
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>31</height>
+       <height>30</height>
       </size>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
@@ -61,6 +67,12 @@
       </property>
       <item>
        <widget class="QPushButton" name="menuUartBtn">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
          <string>串口</string>
         </property>
@@ -68,6 +80,12 @@
       </item>
       <item>
        <widget class="QPushButton" name="menuPidBtn">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
          <string>PID</string>
         </property>
@@ -75,13 +93,25 @@
       </item>
       <item>
        <widget class="QPushButton" name="menuNetBtn">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
          <string>网络</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="menuCameraBtn">
+       <widget class="QPushButton" name="menuOscBtn">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
          <string>示波器</string>
         </property>
@@ -89,13 +119,25 @@
       </item>
       <item>
        <widget class="QPushButton" name="menuBluetoothBtn">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
          <string>蓝牙</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="menuIspBtn">
+       <widget class="QPushButton" name="menuDowBtn">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
          <string>下载</string>
         </property>
@@ -115,17 +157,13 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="menuTopBtn">
-        <property name="cursor">
-         <cursorShape>ArrowCursor</cursorShape>
-        </property>
-        <property name="text">
-         <string>钉住</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="menuSettingBtn">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
          <string>设置</string>
         </property>
@@ -133,6 +171,12 @@
       </item>
       <item>
        <widget class="QPushButton" name="menuHelpBtn">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
          <string>帮助</string>
         </property>
@@ -140,6 +184,12 @@
       </item>
       <item>
        <widget class="QPushButton" name="menuAboutBtn">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
          <string>关于</string>
         </property>
@@ -150,11 +200,17 @@
    </item>
    <item>
     <widget class="QStackedWidget" name="mainWidget">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="currentIndex">
-      <number>5</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="uartPage">
-      <layout class="QGridLayout" name="gridLayout_4">
+      <layout class="QGridLayout" name="gridLayout_27">
        <item row="0" column="0" rowspan="2">
         <widget class="QWidget" name="uartConfigWidget" native="true">
          <property name="enabled">
@@ -162,7 +218,7 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>195</width>
+           <width>0</width>
            <height>0</height>
           </size>
          </property>
@@ -172,23 +228,14 @@
            <height>16777214</height>
           </size>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <property name="spacing">
-           <number>0</number>
-          </property>
+         <layout class="QGridLayout" name="gridLayout_4">
           <property name="leftMargin">
-           <number>9</number>
-          </property>
-          <property name="topMargin">
            <number>0</number>
           </property>
           <property name="rightMargin">
            <number>0</number>
           </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
+          <item row="0" column="0">
            <widget class="QGroupBox" name="uartConfigGroup">
             <property name="enabled">
              <bool>true</bool>
@@ -201,30 +248,37 @@
             </property>
             <property name="maximumSize">
              <size>
-              <width>185</width>
+              <width>200</width>
               <height>16777215</height>
              </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
             </property>
             <property name="title">
              <string>串口配置</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_2">
              <property name="leftMargin">
-              <number>9</number>
+              <number>6</number>
              </property>
              <property name="rightMargin">
-              <number>9</number>
-             </property>
-             <property name="verticalSpacing">
-              <number>9</number>
+              <number>6</number>
              </property>
              <item row="0" column="0" colspan="3">
-              <widget class="QComboBox" name="uartPortName"/>
+              <widget class="QComboBox" name="uartPortName">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </widget>
              </item>
              <item row="1" column="0" colspan="2">
               <widget class="QLabel" name="uartBaudRateLabel">
                <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;波特率&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;波特率&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
               </widget>
              </item>
@@ -232,7 +286,7 @@
               <widget class="QComboBox" name="uartBaudRate">
                <property name="minimumSize">
                 <size>
-                 <width>101</width>
+                 <width>0</width>
                  <height>0</height>
                 </size>
                </property>
@@ -296,7 +350,7 @@
              <item row="2" column="0" colspan="2">
               <widget class="QLabel" name="uartCheckBitLabel">
                <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt; 校验位&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;校验位&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
               </widget>
              </item>
@@ -304,7 +358,7 @@
               <widget class="QComboBox" name="uartCheckBit">
                <property name="minimumSize">
                 <size>
-                 <width>101</width>
+                 <width>0</width>
                  <height>0</height>
                 </size>
                </property>
@@ -328,7 +382,7 @@
              <item row="3" column="0" colspan="2">
               <widget class="QLabel" name="uartDataBitLabel">
                <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;数据位&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;数据位&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
               </widget>
              </item>
@@ -336,7 +390,7 @@
               <widget class="QComboBox" name="uartDataBit">
                <property name="minimumSize">
                 <size>
-                 <width>101</width>
+                 <width>0</width>
                  <height>0</height>
                 </size>
                </property>
@@ -365,7 +419,7 @@
              <item row="4" column="0" colspan="2">
               <widget class="QLabel" name="uartStopBitLabel">
                <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt; 停止位&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;停止位&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
               </widget>
              </item>
@@ -373,7 +427,7 @@
               <widget class="QComboBox" name="uartStopBit">
                <property name="minimumSize">
                 <size>
-                 <width>101</width>
+                 <width>0</width>
                  <height>0</height>
                 </size>
                </property>
@@ -396,8 +450,14 @@
              </item>
              <item row="5" column="0">
               <widget class="QLabel" name="uartOperateLabel">
+               <property name="maximumSize">
+                <size>
+                 <width>36</width>
+                 <height>16777215</height>
+                </size>
+               </property>
                <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt; 操作&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;操作&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
               </widget>
              </item>
@@ -405,6 +465,12 @@
               <widget class="QRadioButton" name="uartStateBtn">
                <property name="enabled">
                 <bool>false</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>18</width>
+                 <height>16777215</height>
+                </size>
                </property>
                <property name="text">
                 <string/>
@@ -418,7 +484,7 @@
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>101</width>
+                 <width>0</width>
                  <height>0</height>
                 </size>
                </property>
@@ -430,7 +496,7 @@
             </layout>
            </widget>
           </item>
-          <item>
+          <item row="1" column="0">
            <spacer name="uartConfigVerticalSpacer1">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -443,7 +509,7 @@
             </property>
            </spacer>
           </item>
-          <item>
+          <item row="2" column="0">
            <widget class="QGroupBox" name="uartRecGroup">
             <property name="maximumSize">
              <size>
@@ -456,10 +522,10 @@
             </property>
             <layout class="QGridLayout" name="gridLayout_3">
              <property name="leftMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <property name="rightMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <property name="verticalSpacing">
               <number>9</number>
@@ -512,7 +578,7 @@
              <item row="1" column="1">
               <widget class="QCheckBox" name="uartRecLogCheck">
                <property name="text">
-                <string>日志模式</string>
+                <string>分包显示</string>
                </property>
               </widget>
              </item>
@@ -551,7 +617,7 @@
             </layout>
            </widget>
           </item>
-          <item>
+          <item row="3" column="0">
            <spacer name="uartConfigVerticalSpacer2">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -564,7 +630,7 @@
             </property>
            </spacer>
           </item>
-          <item>
+          <item row="4" column="0">
            <widget class="QGroupBox" name="uartSendGroup">
             <property name="maximumSize">
              <size>
@@ -577,10 +643,10 @@
             </property>
             <layout class="QGridLayout" name="gridLayout_13">
              <property name="leftMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <property name="rightMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <property name="spacing">
               <number>9</number>
@@ -744,11 +810,14 @@
            <height>311</height>
           </size>
          </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="html">
           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'SimSun'; font-size:11.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
@@ -815,6 +884,9 @@ p, li { white-space: pre-wrap; }
              <height>203</height>
             </size>
            </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
           </widget>
          </item>
         </layout>
@@ -822,12 +894,12 @@ p, li { white-space: pre-wrap; }
       </layout>
      </widget>
      <widget class="QWidget" name="pidPage">
-      <layout class="QGridLayout" name="gridLayout">
+      <layout class="QGridLayout" name="gridLayout_28">
        <item row="0" column="0" rowspan="2">
         <widget class="QWidget" name="pidConfigWidget" native="true">
          <property name="minimumSize">
           <size>
-           <width>195</width>
+           <width>0</width>
            <height>0</height>
           </size>
          </property>
@@ -837,23 +909,14 @@ p, li { white-space: pre-wrap; }
            <height>16777215</height>
           </size>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_4">
-          <property name="spacing">
-           <number>0</number>
-          </property>
+         <layout class="QGridLayout" name="gridLayout">
           <property name="leftMargin">
-           <number>9</number>
-          </property>
-          <property name="topMargin">
            <number>0</number>
           </property>
           <property name="rightMargin">
            <number>0</number>
           </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
+          <item row="0" column="0">
            <widget class="QGroupBox" name="pidUartConfig">
             <property name="enabled">
              <bool>true</bool>
@@ -872,7 +935,7 @@ p, li { white-space: pre-wrap; }
             </property>
             <property name="maximumSize">
              <size>
-              <width>185</width>
+              <width>200</width>
               <height>16777215</height>
              </size>
             </property>
@@ -881,13 +944,10 @@ p, li { white-space: pre-wrap; }
             </property>
             <layout class="QGridLayout" name="gridLayout_12">
              <property name="leftMargin">
-              <number>9</number>
+              <number>6</number>
              </property>
              <property name="rightMargin">
-              <number>9</number>
-             </property>
-             <property name="verticalSpacing">
-              <number>9</number>
+              <number>6</number>
              </property>
              <item row="0" column="0" colspan="3">
               <widget class="QComboBox" name="pidPortName"/>
@@ -895,7 +955,7 @@ p, li { white-space: pre-wrap; }
              <item row="1" column="0" colspan="2">
               <widget class="QLabel" name="pidBandRateLabel">
                <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;波特率&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;波特率&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
               </widget>
              </item>
@@ -967,7 +1027,7 @@ p, li { white-space: pre-wrap; }
              <item row="2" column="0" colspan="2">
               <widget class="QLabel" name="pidCheckBitLabel">
                <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt; 校验位&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;校验位&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
               </widget>
              </item>
@@ -999,7 +1059,7 @@ p, li { white-space: pre-wrap; }
              <item row="3" column="0" colspan="2">
               <widget class="QLabel" name="pidDataBitLabel">
                <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;数据位&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;数据位&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
               </widget>
              </item>
@@ -1036,7 +1096,7 @@ p, li { white-space: pre-wrap; }
              <item row="4" column="0" colspan="2">
               <widget class="QLabel" name="pidStopBitLabel">
                <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt; 停止位&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;停止位&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
               </widget>
              </item>
@@ -1067,8 +1127,14 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="5" column="0">
               <widget class="QLabel" name="pidOperateLabel">
+               <property name="maximumSize">
+                <size>
+                 <width>36</width>
+                 <height>16777215</height>
+                </size>
+               </property>
                <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt; 操作&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;操作&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
               </widget>
              </item>
@@ -1076,6 +1142,12 @@ p, li { white-space: pre-wrap; }
               <widget class="QRadioButton" name="pidStateBtn">
                <property name="enabled">
                 <bool>false</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>18</width>
+                 <height>16777215</height>
+                </size>
                </property>
                <property name="text">
                 <string/>
@@ -1101,7 +1173,7 @@ p, li { white-space: pre-wrap; }
             </layout>
            </widget>
           </item>
-          <item>
+          <item row="1" column="0">
            <spacer name="verticalSpacer">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -1114,7 +1186,7 @@ p, li { white-space: pre-wrap; }
             </property>
            </spacer>
           </item>
-          <item>
+          <item row="2" column="0">
            <widget class="QGroupBox" name="pidConfig">
             <property name="maximumSize">
              <size>
@@ -1127,10 +1199,10 @@ p, li { white-space: pre-wrap; }
             </property>
             <layout class="QGridLayout" name="gridLayout_6">
              <property name="leftMargin">
-              <number>9</number>
+              <number>6</number>
              </property>
              <property name="rightMargin">
-              <number>9</number>
+              <number>6</number>
              </property>
              <item row="0" column="0">
               <widget class="QLabel" name="pidChannel">
@@ -1361,7 +1433,7 @@ p, li { white-space: pre-wrap; }
             </layout>
            </widget>
           </item>
-          <item>
+          <item row="3" column="0">
            <spacer name="verticalSpacer_2">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -1374,23 +1446,23 @@ p, li { white-space: pre-wrap; }
             </property>
            </spacer>
           </item>
-          <item>
+          <item row="4" column="0">
            <widget class="QGroupBox" name="pidDisplay">
             <property name="title">
              <string>显示区命令</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_11">
              <property name="leftMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <property name="rightMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <item row="0" column="0">
               <widget class="QLabel" name="pidLineLabel">
                <property name="minimumSize">
                 <size>
-                 <width>80</width>
+                 <width>0</width>
                  <height>0</height>
                 </size>
                </property>
@@ -1403,13 +1475,13 @@ p, li { white-space: pre-wrap; }
               <widget class="QComboBox" name="pidZoomBtn">
                <property name="minimumSize">
                 <size>
-                 <width>80</width>
+                 <width>0</width>
                  <height>0</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>75</width>
+                 <width>16777215</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -1436,7 +1508,7 @@ p, li { white-space: pre-wrap; }
               <widget class="QComboBox" name="pidImgForm">
                <property name="minimumSize">
                 <size>
-                 <width>80</width>
+                 <width>0</width>
                  <height>0</height>
                 </size>
                </property>
@@ -1602,7 +1674,7 @@ p, li { white-space: pre-wrap; }
         <widget class="QWidget" name="netConfigWidget" native="true">
          <property name="minimumSize">
           <size>
-           <width>195</width>
+           <width>200</width>
            <height>0</height>
           </size>
          </property>
@@ -1617,16 +1689,16 @@ p, li { white-space: pre-wrap; }
            <number>0</number>
           </property>
           <property name="leftMargin">
-           <number>9</number>
+           <number>0</number>
           </property>
           <property name="topMargin">
-           <number>0</number>
+           <number>11</number>
           </property>
           <property name="rightMargin">
            <number>0</number>
           </property>
           <property name="bottomMargin">
-           <number>0</number>
+           <number>11</number>
           </property>
           <item>
            <widget class="QGroupBox" name="netConfigGroup">
@@ -1635,7 +1707,7 @@ p, li { white-space: pre-wrap; }
             </property>
             <property name="maximumSize">
              <size>
-              <width>185</width>
+              <width>200</width>
               <height>16777215</height>
              </size>
             </property>
@@ -1644,10 +1716,10 @@ p, li { white-space: pre-wrap; }
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
              <property name="leftMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <property name="rightMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <item row="0" column="0" colspan="2">
               <widget class="QLabel" name="netProtocolLabel">
@@ -1751,10 +1823,10 @@ p, li { white-space: pre-wrap; }
             </property>
             <layout class="QGridLayout" name="gridLayout_8">
              <property name="leftMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <property name="rightMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <item row="0" column="0">
               <widget class="QRadioButton" name="netRecAsciiBtn">
@@ -1804,7 +1876,7 @@ p, li { white-space: pre-wrap; }
              <item row="1" column="1">
               <widget class="QCheckBox" name="netRecLogBtn">
                <property name="text">
-                <string>日志模式</string>
+                <string>分包显示</string>
                </property>
               </widget>
              </item>
@@ -1869,10 +1941,10 @@ p, li { white-space: pre-wrap; }
             </property>
             <layout class="QGridLayout" name="gridLayout_9">
              <property name="leftMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <property name="rightMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <item row="2" column="3">
               <widget class="QLabel" name="netSendCycleMsLabel">
@@ -2033,11 +2105,14 @@ p, li { white-space: pre-wrap; }
            <height>311</height>
           </size>
          </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="html">
           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'SimSun'; font-size:11.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
@@ -2070,6 +2145,9 @@ p, li { white-space: pre-wrap; }
              <width>16777215</width>
              <height>203</height>
             </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
            </property>
           </widget>
          </item>
@@ -2127,6 +2205,12 @@ p, li { white-space: pre-wrap; }
           </size>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_8">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
           <item>
            <widget class="QGroupBox" name="oscConfigGroup">
             <property name="enabled">
@@ -2134,7 +2218,7 @@ p, li { white-space: pre-wrap; }
             </property>
             <property name="maximumSize">
              <size>
-              <width>185</width>
+              <width>200</width>
               <height>16777215</height>
              </size>
             </property>
@@ -2143,10 +2227,10 @@ p, li { white-space: pre-wrap; }
             </property>
             <layout class="QGridLayout" name="gridLayout_20">
              <property name="leftMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <property name="rightMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <item row="0" column="0" colspan="2">
               <widget class="QLabel" name="oscProtocolLabel">
@@ -2250,10 +2334,10 @@ p, li { white-space: pre-wrap; }
             </property>
             <layout class="QGridLayout" name="gridLayout_21">
              <property name="leftMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <property name="rightMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <property name="spacing">
               <number>0</number>
@@ -2333,10 +2417,10 @@ p, li { white-space: pre-wrap; }
             </property>
             <layout class="QGridLayout" name="gridLayout_22">
              <property name="leftMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <property name="rightMargin">
-              <number>0</number>
+              <number>6</number>
              </property>
              <item row="2" column="3">
               <widget class="QLabel" name="oscSendCycleMsLabel">
@@ -2638,6 +2722,9 @@ p, li { white-space: pre-wrap; }
               <width>16777215</width>
               <height>1000</height>
              </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
             </property>
            </widget>
           </item>
@@ -3168,6 +3255,9 @@ p, li { white-space: pre-wrap; }
               <height>171</height>
              </size>
             </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
            </widget>
           </item>
           <item row="0" column="1">
@@ -3206,6 +3296,15 @@ p, li { white-space: pre-wrap; }
    </item>
    <item>
     <widget class="QWidget" name="statusBar" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <property name="spacing">
        <number>0</number>
@@ -3284,6 +3383,12 @@ p, li { white-space: pre-wrap; }
       </item>
       <item>
        <widget class="QPushButton" name="clearCounterBtn">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>23</height>
+         </size>
+        </property>
         <property name="text">
          <string>清空计数</string>
         </property>
@@ -3298,7 +3403,7 @@ p, li { white-space: pre-wrap; }
   <customwidget>
    <class>QCustomPlot</class>
    <extends>QWidget</extends>
-   <header location="global">qcustomplot.h</header>
+   <header>qcustomplot.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

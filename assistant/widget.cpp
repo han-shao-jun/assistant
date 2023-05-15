@@ -6,8 +6,8 @@ Widget::Widget(QWidget *parent)
         : QWidget(parent), ui(new Ui::Widget)
 {
     ui->setupUi(this);
+    QLoggingCategory::defaultCategory()->setEnabled(QtDebugMsg, true);
     qDebug() << "main id: " << QThread::currentThreadId();
-    setWindowTitle(tr("多功能调试助手"));
 
     qRegisterMetaType<COMMON_MSG::MSG>("COMMON_MSG::MSG"); //注册元类型，用于信号与槽传递数据
     qRegisterMetaType<DOW::CMD>("DOW::CMD");               //注册元类型，用于信号与槽传递数据
@@ -19,7 +19,7 @@ Widget::Widget(QWidget *parent)
     uartThread = new Uart();
     connect(this, &Widget::startUartThread, uartThread, &Uart::recConfig);  //主线程启动串口线程
     connect(this, &Widget::closeUartThread, uartThread, &Uart::close);      //主线程结束串口线程
-    connect(this, &Widget::sendUartDateSignal, uartThread, &Uart::write);   //主线程向串口线程发送数据    
+    connect(this, &Widget::sendUartDateSignal, uartThread, &Uart::write);   //主线程向串口线程发送数据
     connect(uartThread, &Uart::msgSignal, this, &Widget::uartMsgHandle);    //主线程接收串口线程数据
 
 
@@ -61,23 +61,7 @@ Widget::Widget(QWidget *parent)
     connect(dowThreadWork, &Download::msgSignal, this, &Widget::dowMsgHandle);   //主线程接收下载线程消息
     dowThread->start();
 
-    /***********记录当前选择页面与上一次选择页面*******************/
-    widgetIndex = ui->mainWidget->currentIndex();
-    widgetIndexLast = widgetIndex;
-    connect(ui->mainWidget, &QStackedWidget::currentChanged, this, [=]()
-    {
-        widgetIndexLast = widgetIndex;
-        widgetIndex = ui->mainWidget->currentIndex();
-        if (isUartConnected)
-        {
-            ui->uartOperateBtn->click();
-        }
-        if (isPidConnected)
-        {
-            ui->pidOperateBtn->click();
-        }
-    });
-
+    /***********初始化界面*******************/
     this->menuInit();
     this->uartInit();
     this->pidInit();
@@ -169,37 +153,108 @@ Widget::~Widget()
     qDebug() << "delete ui";
 }
 
+
 /**
  * @brief 菜单栏初始化
  */
 void Widget::menuInit()
 {
+    ui->mainWidget->setCurrentIndex(0);
+    widgetIndex = ui->mainWidget->currentIndex();
+    ui->menuUartBtn->setStyleSheet("QPushButton{\n"
+                                   "    border-style:none;\n"
+                                   "    border-top: 1px solid #23A7F2;\n"
+                                   "    color:#118DC0;\n"
+                                   "    background: #1E1E1E;\n"
+                                   "}");
+    connect(ui->mainWidget, &QStackedWidget::currentChanged, this, [=]()
+    {
+        QString Selected = "QPushButton{\n"
+                           "    border-style:none;\n"
+                           "    border: none;"
+                           "    border-top: 1px solid #23A7F2;\n"
+                           "    color:#23A7F2;\n"
+                           "    background: #1E1E1E;\n"
+                           "    min-height: 15px;"
+                           "}";
+
+        QString noSelected = "QPushButton{\n"
+                             "    border-style:none;\n"
+                             "    border: none;"
+                             "    color:#DCDCDC;\n"
+                             "    padding: 3px;\n"
+                             "    min-height: 15px;\n"
+                             "    background-color: #4B4B4B;\n"
+                             "}\n"
+                             "\n"
+                             "QPushButton:hover{\n"
+                             "    border: none;"
+                             "    border-style:none;"
+                             "    color:#FFFFFF;\n"
+                             "    background-color:rgba(51,127,209,230);\n"
+                             "}";
+
+        switch (widgetIndex)
+        {
+        case 0:
+            ui->menuUartBtn->setStyleSheet(noSelected);
+            break;
+        case 1:
+            ui->menuPidBtn->setStyleSheet(noSelected);
+            break;
+        case 2:
+            ui->menuNetBtn->setStyleSheet(noSelected);
+            break;
+        case 3:
+            ui->menuOscBtn->setStyleSheet(noSelected);
+            break;
+        case 4:
+            ui->menuBluetoothBtn->setStyleSheet(noSelected);
+            break;
+        case 5:
+            ui->menuDowBtn->setStyleSheet(noSelected);
+            break;
+        }
+        widgetIndex = ui->mainWidget->currentIndex();
+        switch (widgetIndex)
+        {
+        case 0:
+            ui->menuUartBtn->setStyleSheet(Selected);
+            break;
+        case 1:
+            ui->menuPidBtn->setStyleSheet(Selected);
+            break;
+        case 2:
+            ui->menuNetBtn->setStyleSheet(Selected);
+            break;
+        case 3:
+            ui->menuOscBtn->setStyleSheet(Selected);
+            break;
+        case 4:
+            ui->menuBluetoothBtn->setStyleSheet(Selected);
+            break;
+        case 5:
+            ui->menuDowBtn->setStyleSheet(Selected);
+            break;
+        }
+
+        if (isUartConnected)
+        {
+            ui->uartOperateBtn->click();
+        }
+        if (isPidConnected)
+        {
+            ui->pidOperateBtn->click();
+        }
+
+    });
+
     connect(ui->menuUartBtn, &QPushButton::clicked, this, &Widget::menuBtnClicked);
     connect(ui->menuPidBtn, &QPushButton::clicked, this, &Widget::menuBtnClicked);
     connect(ui->menuNetBtn, &QPushButton::clicked, this, &Widget::menuBtnClicked);
-    connect(ui->menuCameraBtn, &QPushButton::clicked, this, &Widget::menuBtnClicked);
+    connect(ui->menuOscBtn, &QPushButton::clicked, this, &Widget::menuBtnClicked);
     connect(ui->menuBluetoothBtn, &QPushButton::clicked, this, &Widget::menuBtnClicked);
-    connect(ui->menuIspBtn, &QPushButton::clicked, this, &Widget::menuBtnClicked);
-    connect(ui->menuTopBtn, &QPushButton::clicked, this, [=]()
-    {
-        static bool isTop = false;
-        if (!isTop)
-        {
-#ifdef Q_OS_WINDOWS
-            //调用windows api 置顶层
-            ::SetWindowPos((HWND)this->winId(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-            isTop = true;
-#endif
-        }
-        else
-        {
-#ifdef Q_OS_WINDOWS
-            //调用windows api 取消置顶层
-            ::SetWindowPos((HWND)this->winId(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-            isTop = false;
-#endif
-        }
-    });
+    connect(ui->menuDowBtn, &QPushButton::clicked, this, &Widget::menuBtnClicked);
 }
 
 /**
@@ -207,7 +262,7 @@ void Widget::menuInit()
  */
 void Widget::menuBtnClicked()
 {
-    QString objName = sender()->objectName();
+    QString objName = sender()->objectName();   //获取发送信号对象的名字
     int index = 0;
     if (objName == "menuUartBtn")
     {
@@ -221,7 +276,7 @@ void Widget::menuBtnClicked()
     {
         index = 2;
     }
-    else if (objName == "menuCameraBtn")
+    else if (objName == "menuOscBtn")
     {
         index = 3;
     }
@@ -229,7 +284,7 @@ void Widget::menuBtnClicked()
     {
         index = 4;
     }
-    else if (objName == "menuIspBtn")
+    else if (objName == "menuDowBtn")
     {
         index = 5;
     }
@@ -240,25 +295,52 @@ void Widget::menuBtnClicked()
     ui->mainWidget->setCurrentIndex(index);
 }
 
-
 /**
  * @brief 初始化串口助手界面
  */
 void Widget::uartInit()
 {
-    /*************调整串口界面*******************************/
+    /*************调整串口默认参数*******************************/
     ui->uartBaudRate->setCurrentIndex(6);
     ui->uartDataBit->setCurrentIndex(3);
     ui->uartSendBtn->setDisabled(true);
+
+    /*************调整串口下拉控件样式*******************************/
+    ui->uartPortName->setView(new QListView());
+    ui->uartBaudRate->setView(new QListView());
+    ui->uartCheckBit->setView(new QListView());
+    ui->uartDataBit->setView(new QListView());
+    ui->uartStopBit->setView(new QListView());
 
     /**************填充可用串口*****************************/
     auto ports = SerialPortInfo::availablePorts();
     ui->uartPortName->clear();
     ui->uartPortName->addItems(ports);
+
+    /**************添加串口ToolTip*****************************/
+    auto *model = new QStandardItemModel();
+    for (int i = 0; i < ui->uartPortName->count(); i++)
+    {
+        auto *item = new QStandardItem(ui->uartPortName->itemText(i));
+        item->setToolTip(ui->uartPortName->itemText(i));  //设置提示文本
+        model->appendRow(item);                           //将item添加到model中
+    }
+    ui->uartPortName->setModel(model);  //下拉框设置model
+
+    /**************连接串口信号*****************************/
     connect(serialPortInfo, &SerialPortInfo::update, this, [=](const QStringList& ports) //刷新可用串口
     {
         ui->uartPortName->clear();
         ui->uartPortName->addItems(ports);
+
+        auto *model = new QStandardItemModel();
+        for (int i = 0; i < ui->uartPortName->count(); i++)
+        {
+            auto *item = new QStandardItem(ui->uartPortName->itemText(i));
+            item->setToolTip(ui->uartPortName->itemText(i));  //设置提示文本
+            model->appendRow(item);                           //将item添加到model中
+        }
+        ui->uartPortName->setModel(model);  //下拉框设置model
     });
     connect(serialPortInfo, &SerialPortInfo::disconnected, this, [=](const QString& port)
     {
@@ -274,6 +356,7 @@ void Widget::uartInit()
             ui->uartOperateBtn->setText(tr("打开串口")); //改变按钮文字
         }
     });
+
 
     /*************限制输入框内容**************************/
     QRegExp regExp(R"(^([1-9][0-9]{1,5})?$)");  //正则表达式(注意原始字面量)
@@ -373,7 +456,6 @@ void Widget::uartInit()
     });
     connect(ui->uartSendBtn, &QPushButton::clicked, this, &Widget::uartSendData);   //串口发送区发送数据并处理
 
-
     /**************串口定时自动发送***********************/
     uartAutoSendTimer = new QTimer(this);
     connect(ui->uartSendAutoBtn, &QCheckBox::stateChanged, this, [=]()          //串口定时发送按钮
@@ -444,11 +526,15 @@ void Widget::uartMsgHandle(const COMMON_MSG::MSG& msg)
         if (ui->uartRecStopBtn->checkState() != Qt::Checked) //暂停接收按钮没有被按下
         {
             QByteArray recText = uartThread->recBufferUart.dequeue();   //获取接收缓冲区的数据
-            recBytes += recText.length();                           //追加接收到的字符字节数量
+            recBytes += recText.length();                               //追加接收到的字符字节数量
             ui->recLabel->setText(QString("接收字节数:%1").arg(recBytes));
-            if (ui->uartRecHexBtn->isChecked())                     //判断是否显示16进制
+            if (ui->uartRecHexBtn->isChecked())                         //判断是否显示16进制
             {
                 QByteArray_to_HexQByteArray(recText);
+            }
+            if (ui->uartRecLogCheck->isChecked())
+            {
+                recText.append("\n");
             }
             ui->uartRecText->moveCursor(QTextCursor::End);  //移动光标到末尾
             ui->uartRecText->insertPlainText(recText);  //文末追加文本
@@ -483,13 +569,14 @@ void Widget::uartSendData()
 {
     QByteArray sendText;
     sendText = ui->uartSendText->toPlainText().toUtf8();
+    if (!sendText.isEmpty())
+    {
+        if (ui->uartSendNewlineBtn->checkState() == Qt::Checked)     //发送新行被选中
+            sendText += '\n';
 
-    if (ui->uartSendNewlineBtn->checkState() == Qt::Checked)     //发送新行被选中
-        sendText += '\n';
-
-    if (ui->uartSendHexBtn->isChecked())                         //16进制发送
-        sendText = sendText.toHex();
-
+        if (ui->uartSendHexBtn->isChecked())                         //16进制发送
+            sendText = sendText.toHex();
+    }
     emit sendUartDateSignal(sendText);
     sendBytes += sendText.length();                             //累加发送字符字节数
     ui->sendLabel->setText(QString("发送字节数:%1").arg(sendBytes));
@@ -505,14 +592,43 @@ void Widget::pidInit()
     ui->pidBaudRate->setCurrentIndex(6);
     ui->pidDataBit->setCurrentIndex(3);
 
+    /*************调整下拉控件样式*******************************/
+    ui->pidPortName->setView(new QListView());
+    ui->pidBaudRate->setView(new QListView());
+    ui->pidCheckBit->setView(new QListView());
+    ui->pidDataBit->setView(new QListView());
+    ui->pidStopBit->setView(new QListView());
+    ui->pidChannelBtn->setView(new QListView());
+
     /**************填充可用串口*****************************/
     auto ports = SerialPortInfo::availablePorts();
     ui->pidPortName->clear();
     ui->pidPortName->addItems(ports);
+
+    /**************添加串口ToolTip*****************************/
+    auto *model = new QStandardItemModel();
+    for (int i = 0; i < ui->pidPortName->count(); i++)
+    {
+        auto *item = new QStandardItem(ui->pidPortName->itemText(i));
+        item->setToolTip(ui->pidPortName->itemText(i));  //设置提示文本
+        model->appendRow(item);                           //将item添加到model中
+    }
+    ui->pidPortName->setModel(model);  //下拉框设置model
+
+    /**************连接串口信号*****************************/
     connect(serialPortInfo, &SerialPortInfo::update, this, [=](const QStringList& ports) //刷新可用串口
     {
         ui->pidPortName->clear();
         ui->pidPortName->addItems(ports);
+
+        auto *model = new QStandardItemModel();
+        for (int i = 0; i < ui->pidPortName->count(); i++)
+        {
+            auto *item = new QStandardItem(ui->pidPortName->itemText(i));
+            item->setToolTip(ui->pidPortName->itemText(i));  //设置提示文本
+            model->appendRow(item);                           //将item添加到model中
+        }
+        ui->pidPortName->setModel(model);  //下拉框设置model
     });
     connect(serialPortInfo, &SerialPortInfo::disconnected, this, [=](const QString& port)
     {
@@ -591,15 +707,15 @@ void Widget::pidInit()
         {
             if (ui->pidPortName->count() != 0)
             {
-                QStringList config;
-                config.append(QString("uart"));
-                config.append(ui->pidPortName->currentText());
-                config.append(ui->pidBaudRate->currentText());
-                config.append(QString::number(ui->pidCheckBit->currentIndex()));
-                config.append(ui->uartDataBit->currentText());
-                config.append(QString::number(ui->pidStopBit->currentIndex()));
+                pidConfig.clear();
+                pidConfig.append(QString("uart"));
+                pidConfig.append(ui->pidPortName->currentText());
+                pidConfig.append(ui->pidBaudRate->currentText());
+                pidConfig.append(QString::number(ui->pidCheckBit->currentIndex()));
+                pidConfig.append(ui->uartDataBit->currentText());
+                pidConfig.append(QString::number(ui->pidStopBit->currentIndex()));
                 serialPortInfo->registerUsingSerialPort(ui->pidPortName->currentText());
-                emit startPidThread(config);
+                emit startPidThread(pidConfig);
             }
             else
             {
@@ -1026,6 +1142,10 @@ void Widget::netInit()
     ui->netIp->setEditable(true);                        //使下拉选框可以编辑
     ui->netIp->addItems(Network::getAllLocalIp());       //更新可用IP
 
+    /*************调整下拉控件样式*******************************/
+    ui->netIp->setView(new QListView());
+    ui->netProtocol->setView(new QListView());
+
     /*************网络通信界面UI控件信号与槽连接**********************/
     connect(ui->netProtocol, &QComboBox::currentTextChanged, this, [=]()
     {
@@ -1328,30 +1448,25 @@ void Widget::netMsgHandle(const COMMON_MSG::MSG& msg)
 {
     if (msg == COMMON_MSG::MSG::ReadyRead)  //可以读到数据
     {
-        if (widgetIndex == 2) //网络数据显示页面
+        if (ui->netRecStopBtn->checkState() != Qt::Checked) //暂停接收按钮没有被按下
         {
-            if (ui->netRecStopBtn->checkState() != Qt::Checked) //暂停接收按钮没有被按下
+            QByteArray recText = netThread->recBuffer.dequeue();         //获取接收缓冲区的数据
+            recBytes += recText.length();                                //追加接收到的字符字节数量
+            ui->recLabel->setText(QString("接收字节数:%1").arg(recBytes));
+            if (ui->netRecHexBtn->isChecked())                //16进制显示
             {
-                QByteArray recText = netThread->recBuffer.dequeue();         //获取接收缓冲区的数据
-                recBytes += recText.length();                                 //追加接收到的字符字节数量
-                ui->recLabel->setText(QString("接收字节数:%1").arg(recBytes));
-                QString lastText = ui->netRecText->toPlainText(); //获取已经显示的文本
-                if (ui->netRecHexBtn->isChecked())                //判断是否显示16进制
-                {
-                    QByteArray_to_HexQByteArray(recText);
-                }
-                lastText += recText;                               //在末尾追加字符串
-                ui->netRecText->setText(lastText);                 //刷新文本显示
-                ui->netRecText->moveCursor(QTextCursor::End);      //滑动显示的文本框
+                QByteArray_to_HexQByteArray(recText);
             }
-            else
+            if (ui->netRecLogBtn->isChecked())  //分包显示
             {
-                netThread->recBuffer.clear();
+                recText.append("\n");
             }
+            ui->netRecText->moveCursor(QTextCursor::End);      //滑动显示的文本框
+            ui->netRecText->insertPlainText(recText);          //追加文本
         }
-        else if (widgetIndex == 3)   //摄像头显示界面
+        else
         {
-
+            netThread->recBuffer.clear();
         }
     }
     else if (msg == COMMON_MSG::MSG::Connected)     //连接成功
@@ -1378,12 +1493,14 @@ void Widget::netSendDate()
 {
     QByteArray sendText;
     sendText = ui->netSendText->toPlainText().toUtf8();
+    if (!sendText.isEmpty())
+    {
+        if (ui->netSendNewlineBtn->checkState() == Qt::Checked)     //发送新行被选中
+            sendText += '\n';
 
-    if (ui->netSendNewlineBtn->checkState() == Qt::Checked)     //发送新行被选中
-        sendText += '\n';
-
-    if (ui->netSendHexBtn->isChecked())                         //16进制发送
-        sendText = sendText.toHex();
+        if (ui->netSendHexBtn->isChecked())                         //16进制发送
+            sendText = sendText.toHex();
+    }
 
     emit sendNetDateSignal(sendText);
     sendBytes += sendText.length();                            //累加发送字符字节数
@@ -1661,20 +1778,16 @@ void Widget::oscMsgHandle(const COMMON_MSG::MSG& msg)
             QByteArray recText = oscThread->recBuffer.dequeue(); // 获取接收缓冲区的数据
             QVector<double> xData, yData;
 
-            //  qDebug() << "size" << recText.size();
-            // qDebug() << recText;
             for (int i = 0; i < recText.size(); i++)
             {
                 xData.append(i);
                 yData.append(static_cast<quint8>(recText[i]));  //只能获取字符型，需要转换
             }
-            // qDebug() << yData;
-            // qDebug() << "yData" << yData;
+
             ui->oscCustomPlot->graph(0)->setData(xData, yData); // 添加数据到对应曲线（带清空数据容器）
 
             // // 自动设定y轴的范围，如果不设定，有可能看不到图像
             // // 也可以用ui->oscCustomPlot->yAxis->setRange(up,low)手动设定y轴范围
-
             ui->oscCustomPlot->replot();                // 刷新图形
         }
         else
@@ -1714,9 +1827,9 @@ void Widget::oscSendDate()
 
 
     uint16_t N = 512; // 采样点数
-    float sample_freq     = 120.0f;                     // 采样频率 120 Hz, 大于两倍的最高频率
-    float sample_interval = 1 / sample_freq;            // 采样间隔0.008333步长
-    float t               = 0;
+    float sample_freq = 120.0f;                     // 采样频率 120 Hz, 大于两倍的最高频率
+    float sample_interval = 1 / sample_freq;        // 采样间隔0.008333步长
+    float t = 0;
 
     for (int i = 0; i < N; ++i)
     {
@@ -1752,8 +1865,8 @@ void Widget::downloadInit()
     });
 
     //置零下载进度
+    ui->dowProgressBar->setRange(0, 100);
     ui->dowProgressBar->reset();
-
 
     /**************ISP界面*****************************/
     ui->ispDowBaudRate->setCurrentIndex(5);
@@ -1769,6 +1882,11 @@ void Widget::downloadInit()
         ui->ispDowPortName->clear();
         ui->ispDowPortName->addItems(ports);
     });
+
+    /*************调整下拉控件样式*******************************/
+    ui->ispDowBaudRate->setView(new QListView());
+    ui->ispDowHWBtn->setView(new QListView());
+    ui->ispDowPortName->setView(new QListView());
 
     /*****************ISP界面按钮信号与槽连接*************************************/
     connect(ui->ispDowOpBtn, &QPushButton::clicked, this, [=]() //串口操作按钮
@@ -1823,6 +1941,9 @@ void Widget::downloadInit()
         ui->iapDowPortName->addItems(ports);
     });
 
+    ui->iapDowBaudRate->setView(new QListView());
+    ui->iapDowPortName->setView(new QListView());
+
     /*****************IAP界面按钮信号与槽连接*************************************/
     connect(ui->iapDowOpBtn, &QPushButton::clicked, this, [=]() //串口操作按钮
     {
@@ -1853,11 +1974,12 @@ void Widget::downloadInit()
         {
             dowCmdArg.clear();
             dowCmdArg << ui->dowFile->text();
+            ui->dowProgressBar->setValue(0);
             this->dowPackCmd(DOW::TYPE::IAP, DOW::Flash, dowCmdArg);
         }
         else
         {
-            QMessageBox::warning(this, QString(tr("警告")), QString(tr("无固件")));
+            QMessageBox::warning(this, QString(tr("警告")), QString(tr("请选择固件")));
         }
     });
     connect(ui->iapDowReadInfoBtn, &QPushButton::clicked, this, [=]()  //读取芯片信息按钮
@@ -1873,8 +1995,10 @@ void Widget::downloadInit()
 }
 
 /**
- * @brief 发送ISP命令
- * @param cmd ISP命令
+ * @brief 打包下载命令
+ * @param type 下载方式
+ * @param cmd 命令
+ * @param arg 命令参数
  */
 void Widget::dowPackCmd(DOW::TYPE type, DOW::CMD cmd, QStringList& arg)
 {
@@ -1939,17 +2063,23 @@ void Widget::dowMsgHandle(const DOW::TYPE& type, const COMMON_MSG::MSG& msg, con
         }
         break;
     case COMMON_MSG::MSG::Log:
-        for (const auto & str : arg)
+        for (const auto& str: arg)
         {
             ui->dowLogText->moveCursor(QTextCursor::End);  //移动光标到末尾
             ui->dowLogText->insertPlainText(str);  //文末追加文本
         }
         break;
+    case COMMON_MSG::MSG::Progress:
+        ui->dowProgressBar->setValue(arg[0].toInt());
     default:
         break;
     }
 }
 
+/**
+ * @brief 设置下载界面控件是否可用
+ * @param stste 状态
+ */
 void Widget::setDowUiIsEnabled(DOW::TYPE type, bool stste)
 {
     if (type == DOW::TYPE::ISP)
@@ -1959,7 +2089,7 @@ void Widget::setDowUiIsEnabled(DOW::TYPE type, bool stste)
         ui->ispDowEraseBtn->setEnabled(stste);
         ui->ispDowReadInfoBtn->setEnabled(stste);
     }
-    else if(type == DOW::TYPE::IAP)
+    else if (type == DOW::TYPE::IAP)
     {
         ui->iapDowOpBtn->setEnabled(stste);
         ui->iapDowFlashBtn->setEnabled(stste);
@@ -1998,5 +2128,32 @@ void Widget::QByteArray_to_HexQByteArray(QByteArray& source)
     }
 }
 
+/**
+ * @brief 加载样式表
+ * @param styleSheetFile 样式表文件路径
+ */
+void Widget::loadStyleSheet(const QString& styleSheetFile)
+{
+    QFile file(styleSheetFile);
+    file.open(QFile::ReadOnly);
+    if (file.isOpen())
+    {
+        QString styleSheet = this->styleSheet();
+        styleSheet += QLatin1String(file.readAll());//读取样式表文件
+        this->setStyleSheet(styleSheet);
+        file.close();
+    }
+}
+
+/**
+ * @brief 鼠标进入事件
+ * @param event 事件
+ */
+void Widget::enterEvent(QEvent *event)
+{
+    setCursor(Qt::ArrowCursor);
+    QApplication::restoreOverrideCursor();//恢复鼠标指针性状
+    QWidget::enterEvent(event);
+}
 
 

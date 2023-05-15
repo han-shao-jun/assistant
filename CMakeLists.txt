@@ -41,8 +41,17 @@ target_link_libraries(qcustomplot
 file(GLOB SRC "${PROJECT_NAME}/*.c*")
 file(GLOB INC "${PROJECT_NAME}/*.h*")
 file(GLOB UI "${PROJECT_NAME}/*.ui")
+file(GLOB QRC "${PROJECT_NAME}/*.qrc")
+file(GLOB RC "${PROJECT_NAME}/*.rc")
 
-add_executable(${PROJECT_NAME} WIN32 ${SRC} ${INC} ${UI})
+
+
+if(CMAKE_BUILD_TYPE MATCHES "Release")
+    add_executable(${PROJECT_NAME} WIN32 ${SRC} ${INC} ${UI} ${QRC} ${RC})
+else ()
+    add_executable(${PROJECT_NAME} ${SRC} ${INC} ${UI} ${QRC} ${RC})
+endif()
+
 target_link_libraries(${PROJECT_NAME}
     Qt5::Core
     Qt5::Gui

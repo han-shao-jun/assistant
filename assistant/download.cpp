@@ -116,20 +116,21 @@ void Download::doWork(const QStringList& config)
                 quint32 data_size = 0;
                 QFile file(config[2]);
                 session_done = false;
-
+                quint32 pktNum = 0;
                 arg.clear();
                 emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::ProcessIng, arg);
 
                 file_size = fileInfo.size();
+                pktNum = (file_size/PACKET_1K_SIZE) + !(!(file_size%PACKET_1K_SIZE));
                 arg.clear();
                 arg.append(QString("IAP:固件大小%1字节\r\n").arg(file_size));
-                arg.append(QString("IAP:预计发送%1个固件数据包\r\n").arg((file_size/PACKET_1K_SIZE) + !(!(file_size%PACKET_1K_SIZE))));
+                arg.append(QString("IAP:预计发送%1个固件数据包\r\n").arg(pktNum));
                 emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::Log, arg);
                 if (file.open(QIODevice::ReadOnly))
                 {
                     while (!session_done)
                     {
-                        if (port->waitForReadyRead(150))
+                        if (port->waitForReadyRead(200))
                         {
                             time_out_cnt = 0;
                             QByteArray rec = port->readAll();
@@ -153,11 +154,13 @@ void Download::doWork(const QStringList& config)
                                     if (rec.at(0) == NAK) //收到NAK和字符“C"，重发
                                     {
                                         state = START;
+                                        qDebug() << "NAK";
                                     }
                                     else if (rec.at(0) == ACK) //收到ACK和字符“C"，转移到发送数据包
                                     {
                                         state = SEND;
                                     }
+                                    qDebug() << "START" << rec;
                                     break;
                                 case SEND:
                                     if (file_size == 0)
@@ -207,6 +210,9 @@ void Download::doWork(const QStringList& config)
                                         }
                                         arg.append(QString("IAP:发送第%1个固件数据包\r\n").arg(pktNo));
                                         emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::Log, arg);
+                                        arg.clear();
+                                        arg.append(QString("%1").arg((pktNo*100)/pktNum));
+                                        emit msgSignal(DOW::TYPE::IAP, COMMON_MSG::MSG::Progress, arg);
                                     }
                                     else
                                     {
@@ -234,7 +240,7 @@ void Download::doWork(const QStringList& config)
                                 {
                                     port->write(data);
                                     port->flush();      //刷新下缓冲区，使串口立即发送
-                                    port->waitForBytesWritten(1);
+                                    port->waitForBytesWritten(10);
                                 }
                             }
                         }
