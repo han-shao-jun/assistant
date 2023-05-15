@@ -297,7 +297,7 @@ enum SelectionRectMode { srmNone    ///< The selection rect is disabled, and all
   Defines the different ways a plottable can be selected. These images show the effect of the
   different selection types, when the indicated selection rect was dragged:
   
-  <center>
+  <centerWidget>
   <table>
   <tr>
     <td>\image html selectiontype-none.png stNone</td>
@@ -307,7 +307,7 @@ enum SelectionRectMode { srmNone    ///< The selection rect is disabled, and all
     <td>\image html selectiontype-multipledataranges.png stMultipleDataRanges</td>
   </tr>
   </table>
-  </center>
+  </centerWidget>
   
   \see QCPAbstractPlottable::setSelectable, QCPDataSelection::enforceType
 */
@@ -4751,7 +4751,7 @@ public:
                         ,gpGeography ///< Colors suitable to represent different elevations on geographical maps
                         ,gpIon       ///< Half hue spectrum from black over purple to blue and finally green (creates banding illusion but allows more precise magnitude estimates)
                         ,gpThermal   ///< Colors suitable for thermal imaging, ranging from dark blue over purple to orange, yellow and white
-                        ,gpPolar     ///< Colors suitable to emphasize polarity around the center, with blue for negative, black in the middle and red for positive values
+                        ,gpPolar     ///< Colors suitable to emphasize polarity around the centerWidget, with blue for negative, black in the middle and red for positive values
                         ,gpSpectrum  ///< An approximation of the visible light spectrum (creates banding illusion but allows more precise magnitude estimates)
                         ,gpJet       ///< Hue variation similar to a spectrum, often used in numerical visualization (creates banding illusion but allows more precise magnitude estimates)
                         ,gpHues      ///< Full hue cycle, with highest and lowest color red (suitable for periodic data, such as angles and phases, see \ref setPeriodic)

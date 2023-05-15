@@ -18,6 +18,7 @@
 #include <QFileDialog>
 #include <QVector>
 #include <QThread>
+#include <QStandardItemModel>
 #include "uart.h"
 #include "pid.h"
 #include "network.h"
@@ -43,6 +44,10 @@ public:
     ~Widget() override;
     static void HexQString_to_QString(QString& source);
     static void QByteArray_to_HexQByteArray(QByteArray& source);
+    void loadStyleSheet(const QString& styleSheetFile);
+
+protected:
+    void enterEvent(QEvent *event);
 
 Q_SIGNALS:
     void startUartThread(const QStringList &config);
@@ -107,10 +112,11 @@ private:
     void setDowUiIsEnabled(DOW::TYPE type, bool stste);
 
     int widgetIndex = 0;
-    int widgetIndexLast = 0;
+    bool isMax = false;
+    QSize winSize;
+    QRect location;
     quint64 recBytes = 0;
     quint64 sendBytes = 0;
-
     SerialPortInfo *serialPortInfo;
 
     /******串口************/
@@ -120,9 +126,11 @@ private:
     QStringList uartConfig;
     QTimer *uartAutoSendTimer{};
     QString uartSendCycle;
-    
+
+
     /*********PID************/
     Pid *pidThread{};
+    QStringList pidConfig;
     bool isPidConnected = false;
     bool isPidStart = true;
     typedef struct PidParam
@@ -199,6 +207,7 @@ private:
     bool iapConnected = false;
     bool iapProcessIng = false;
     QStringList dowCmdArg;
+
 };
 
 #endif // WIDGET_H

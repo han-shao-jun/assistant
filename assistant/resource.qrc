@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>image/ding1.png</file>
+        <file>image/ding2.png</file>
+        <file>image/arrow_down.png</file>
+        <file>image/arrow_up.png</file>
+        <file>image/max.png</file>
+        <file>image/recover.png</file>
+        <file>image/min.png</file>
+        <file>image/close.png</file>
+        <file>image/radio_button_on.png</file>
+        <file>image/logo.png</file>
+        <file>style/center.css</file>
+        <file>style/tille.css</file>
+    </qresource>
+</RCC>

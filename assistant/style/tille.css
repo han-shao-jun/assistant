@@ -1,0 +1,24 @@
+* {
+    color: #D8DEE9;
+    font-size: 15px;
+}
+/*标题栏按钮*/
+QToolButton{
+    border-radius:3px;
+    color:#DCDCDC;
+    padding:3px;
+    background:none;
+    border-style:none;
+}
+
+QToolButton:hover{
+    color:#FFFFFF;
+    margin:1px 1px 2px 1px;
+    background-color:rgba(51,127,209,230);
+}
+
+QToolButton#closeBtn:hover{
+    color:#FFFFFF;
+    margin:1px 1px 2px 1px;
+    background-color:rgba(238,0,0,128);
+}
