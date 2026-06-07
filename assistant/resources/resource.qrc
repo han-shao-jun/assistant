@@ -2,8 +2,8 @@
     <qresource prefix="/">
         <file>image/ding1.png</file>
         <file>image/ding2.png</file>
-        <file>image/arrow_down.png</file>
-        <file>image/arrow_up.png</file>
+        <file>image/arrow_down.svg</file>
+        <file>image/arrow_up.svg</file>
         <file>image/radio_button_on.png</file>
         <file>image/logo.png</file>
         <file>image/logo.ico</file>

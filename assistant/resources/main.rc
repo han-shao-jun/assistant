@@ -1,1 +1,3 @@
 IDI_ICON1       ICON      "./image/logo.ico"
+/* PerMonitorV2 DPI 感知清单：嵌入为 RT_MANIFEST(24) 类型资源，不受链接器 /manifest:no 影响 */
+1               24        "app.manifest"

@@ -26,14 +26,14 @@ QComboBox::drop-down {
 
 /*QCombobox右侧按钮的箭头图标*/
 QComboBox::down-arrow {
-    image: url(:/image/arrow_down.png); /*自定义图片填充*/
+    image: url(:/image/arrow_down.svg); /*自定义图片填充*/
     width: 12px; /*设置该图标的宽高*/
     height: 12px;
 }
 
 /*QCombobox右侧按钮的箭头被按下后图标*/
 QComboBox::down-arrow:on {
-    image: url(:/image/arrow_up.png); /* 显示下拉箭头 */
+    image: url(:/image/arrow_up.svg); /* 显示下拉箭头 */
     width: 12px; /*设置该图标的宽高*/
     height: 12px;
 }
