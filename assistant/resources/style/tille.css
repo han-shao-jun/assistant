@@ -1,0 +1,37 @@
+* {
+    color: #D8DEE9;
+    font-size: 15px;
+    background-color: #1E1E1E;
+}
+
+/*标题栏按钮*/
+#tilleBar > QToolButton{
+    border-radius:3px;
+    color:#DCDCDC;
+    padding:3px;
+    background:none;
+    border-style:none;
+}
+
+/*标题栏按钮悬浮*/
+#tilleBar > QToolButton:hover{
+    color:#FFFFFF;
+    margin:1px 1px 2px 1px;
+    background-color:rgba(51,127,209,230);
+}
+
+/*标题栏关闭按钮*/
+#tilleBar > QToolButton#closeBtn:hover{
+    color:#FFFFFF;
+    margin:1px 1px 2px 1px;
+    background-color:rgba(238,0,0,128);
+}
+
+/* 提示小窗 */
+QToolTip {
+    border-radius: 5px; /* 圆角 */
+    color: #FFFFFF;
+    background: #4B4B4B;;
+    height: 25px;
+    font-size: 16px;
+}

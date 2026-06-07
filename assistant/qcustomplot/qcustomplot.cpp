@@ -1,7 +1,7 @@
 /***************************************************************************
 **                                                                        **
 **  QCustomPlot, an easy to use, modern plotting widget for Qt            **
-**  Copyright (C) 2011-2021 Emanuel Eichhammer                            **
+**  Copyright (C) 2011-2022 Emanuel Eichhammer                            **
 **                                                                        **
 **  This program is free software: you can redistribute it and/or modify  **
 **  it under the terms of the GNU General Public License as published by  **
@@ -18,16 +18,16 @@
 **                                                                        **
 ****************************************************************************
 **           Author: Emanuel Eichhammer                                   **
-**  Website/Contact: http://www.qcustomplot.com/                          **
-**             Date: 29.03.21                                             **
-**          Version: 2.1.0                                                **
+**  Website/Contact: https://www.qcustomplot.com/                         **
+**             Date: 06.11.22                                             **
+**          Version: 2.1.1                                                **
 ****************************************************************************/
 
 #include "qcustomplot.h"
 
 
 /* including file 'src/vector2d.cpp'       */
-/* modified 2021-03-29T02:30:44, size 7973 */
+/* modified 2022-11-06T12:45:56, size 7973 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPVector2D
@@ -272,7 +272,7 @@ QCPVector2D &QCPVector2D::operator-=(const QCPVector2D &vector)
 
 
 /* including file 'src/painter.cpp'        */
-/* modified 2021-03-29T02:30:44, size 8656 */
+/* modified 2022-11-06T12:45:56, size 8656 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPPainter
@@ -489,7 +489,7 @@ void QCPPainter::makeNonCosmetic()
 
 
 /* including file 'src/paintbuffer.cpp'     */
-/* modified 2021-03-29T02:30:44, size 18915 */
+/* modified 2022-11-06T12:45:56, size 18915 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPAbstractPaintBuffer
@@ -976,7 +976,7 @@ void QCPPaintBufferGlFbo::reallocateBuffer()
 
 
 /* including file 'src/layer.cpp'           */
-/* modified 2021-03-29T02:30:44, size 37615 */
+/* modified 2022-11-06T12:45:56, size 37615 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPLayer
@@ -1836,7 +1836,7 @@ void QCPLayerable::wheelEvent(QWheelEvent *event)
 
 
 /* including file 'src/axis/range.cpp'      */
-/* modified 2021-03-29T02:30:44, size 12221 */
+/* modified 2022-11-06T12:45:56, size 12221 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPRange
@@ -1857,9 +1857,9 @@ void QCPLayerable::wheelEvent(QWheelEvent *event)
   Returns the size of the range, i.e. \a upper-\a lower
 */
 
-/*! \fn double QCPRange::centerWidget() const
+/*! \fn double QCPRange::center() const
 
-  Returns the centerWidget of the range, i.e. (\a upper+\a lower)*0.5
+  Returns the center of the range, i.e. (\a upper+\a lower)*0.5
 */
 
 /*! \fn void QCPRange::normalize()
@@ -2158,7 +2158,7 @@ bool QCPRange::validRange(const QCPRange &range)
 
 
 /* including file 'src/selection.cpp'       */
-/* modified 2021-03-29T02:30:44, size 21837 */
+/* modified 2022-11-06T12:45:56, size 21837 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPDataRange
@@ -2759,7 +2759,7 @@ QCPDataSelection QCPDataSelection::inverse(const QCPDataRange &outerRange) const
 
 
 /* including file 'src/selectionrect.cpp'  */
-/* modified 2021-03-29T02:30:44, size 9215 */
+/* modified 2022-11-06T12:45:56, size 9215 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPSelectionRect
@@ -2988,7 +2988,7 @@ void QCPSelectionRect::draw(QCPPainter *painter)
 
 
 /* including file 'src/layout.cpp'          */
-/* modified 2021-03-29T02:30:44, size 78863 */
+/* modified 2022-11-06T12:45:56, size 78863 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPMarginGroup
@@ -5161,7 +5161,7 @@ void QCPLayoutInset::addElement(QCPLayoutElement *element, const QRectF &rect)
 
 
 /* including file 'src/lineending.cpp'      */
-/* modified 2021-03-29T02:30:44, size 11189 */
+/* modified 2022-11-06T12:45:56, size 11189 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPLineEnding
@@ -5291,7 +5291,7 @@ double QCPLineEnding::boundingDistance() const
   
   For example, the \ref esSpikeArrow has a shorter real length than a \ref esFlatArrow, even if
   both have the same \ref setLength value, because the spike arrow has an inward curved back, which
-  reduces the length along its centerWidget axis (the drawing origin for arrows is at the tip).
+  reduces the length along its center axis (the drawing origin for arrows is at the tip).
   
   This function is used for precise, style specific placement of line endings, for example in
   QCPAxes.
@@ -5455,7 +5455,7 @@ void QCPLineEnding::draw(QCPPainter *painter, const QCPVector2D &pos, double ang
 
 
 /* including file 'src/axis/labelpainter.cpp' */
-/* modified 2021-03-29T02:30:44, size 27296   */
+/* modified 2022-11-06T12:45:56, size 27519   */
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5653,8 +5653,8 @@ QByteArray QCPLabelPainterPrivate::generateLabelParameterHash() const
   QByteArray result;
   result.append(QByteArray::number(mParentPlot->bufferDevicePixelRatio()));
   result.append(QByteArray::number(mRotation));
-  //result.append(QByteArray::number((int)tickLabelSide)); TODO: check whether this is really a cache-invalidating property
-  result.append(QByteArray::number((int)mSubstituteExponent));
+  //result.append(QByteArray::number(int(tickLabelSide))); TODO: check whether this is really a cache-invalidating property
+  result.append(QByteArray::number(int(mSubstituteExponent)));
   result.append(QString(mMultiplicationSymbol).toUtf8());
   result.append(mColor.name().toLatin1()+QByteArray::number(mColor.alpha(), 16));
   result.append(mFont.toString().toLatin1());
@@ -5757,9 +5757,12 @@ QPointF QCPLabelPainterPrivate::getAnchorPos(const QPointF &tickPos)
         case asTopRight:    return tickPos+QPointF(-mPadding*M_SQRT1_2, mPadding*M_SQRT1_2);
         case asBottomRight: return tickPos+QPointF(-mPadding*M_SQRT1_2, -mPadding*M_SQRT1_2);
         case asBottomLeft:  return tickPos+QPointF(mPadding*M_SQRT1_2, -mPadding*M_SQRT1_2);
+        default: qDebug() << Q_FUNC_INFO << "invalid mode for anchor side: " << mAnchorSide; break;
       }
+      break;
     }
     case amSkewedUpright:
+      // fall through
     case amSkewedRotated:
     {
       QCPVector2D anchorNormal(tickPos-mAnchorReference);
@@ -5768,6 +5771,7 @@ QPointF QCPLabelPainterPrivate::getAnchorPos(const QPointF &tickPos)
       anchorNormal.normalize();
       return tickPos+(anchorNormal*mPadding).toPointF();
     }
+    default: qDebug() << Q_FUNC_INFO << "invalid mode for anchor mode: " << mAnchorMode; break;
   }
   return tickPos;
 }
@@ -5985,8 +5989,8 @@ QByteArray QCPLabelPainterPrivate::cacheKey(const QString &text, const QColor &c
 {
   return text.toUtf8()+
       QByteArray::number(color.red()+256*color.green()+65536*color.blue(), 36)+
-      QByteArray::number(color.alpha()+256*(int)side, 36)+
-      QByteArray::number((int)(rotation*100)%36000, 36);
+      QByteArray::number(color.alpha()+256*int(side), 36)+
+      QByteArray::number(int(rotation*100), 36);
 }
 
 QCPLabelPainterPrivate::AnchorSide QCPLabelPainterPrivate::skewedAnchorSide(const QPointF &tickPos, double sideExpandHorz, double sideExpandVert) const
@@ -6054,7 +6058,7 @@ void QCPLabelPainterPrivate::analyzeFontMetrics()
 
 
 /* including file 'src/axis/axisticker.cpp' */
-/* modified 2021-03-29T02:30:44, size 18688 */
+/* modified 2022-11-06T12:45:56, size 18693 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPAxisTicker
@@ -6078,7 +6082,7 @@ void QCPLabelPainterPrivate::analyzeFontMetrics()
   The following more specialized axis ticker subclasses are available, see details in the
   respective class documentation:
   
-  <centerWidget>
+  <center>
   <table>
   <tr><td style="text-align:right; padding: 0 1em">QCPAxisTickerFixed</td><td>\image html axisticker-fixed.png</td></tr>
   <tr><td style="text-align:right; padding: 0 1em">QCPAxisTickerLog</td><td>\image html axisticker-log.png</td></tr>
@@ -6088,7 +6092,7 @@ void QCPLabelPainterPrivate::analyzeFontMetrics()
   <tr><td style="text-align:right; padding: 0 1em">QCPAxisTickerTime</td><td>\image html axisticker-time.png
     \image html axisticker-time2.png</td></tr>
   </table>
-  </centerWidget>
+  </center>
   
   \section axisticker-subclassing Creating own axis tickers
   
@@ -6438,7 +6442,7 @@ double QCPAxisTicker::pickClosest(double target, const QVector<double> &candidat
 */
 double QCPAxisTicker::getMantissa(double input, double *magnitude) const
 {
-  const double mag = qPow(10.0, qFloor(qLn(input)/qLn(10.0)));
+  const double mag = std::pow(10.0, std::floor(std::log10(input)));
   if (magnitude) *magnitude = mag;
   return input/mag;
 }
@@ -6474,7 +6478,7 @@ double QCPAxisTicker::cleanMantissa(double input) const
 
 
 /* including file 'src/axis/axistickerdatetime.cpp' */
-/* modified 2021-03-29T02:30:44, size 18829         */
+/* modified 2022-11-06T12:45:56, size 18829         */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPAxisTickerDateTime
@@ -6831,7 +6835,7 @@ double QCPAxisTickerDateTime::dateTimeToKey(const QDate &date, Qt::TimeSpec time
 
 
 /* including file 'src/axis/axistickertime.cpp' */
-/* modified 2021-03-29T02:30:44, size 11745     */
+/* modified 2022-11-06T12:45:56, size 11745     */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPAxisTickerTime
@@ -7080,7 +7084,7 @@ void QCPAxisTickerTime::replaceUnit(QString &text, QCPAxisTickerTime::TimeUnit u
 
 
 /* including file 'src/axis/axistickerfixed.cpp' */
-/* modified 2021-03-29T02:30:44, size 5575       */
+/* modified 2022-11-06T12:45:56, size 5575       */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPAxisTickerFixed
@@ -7182,7 +7186,7 @@ double QCPAxisTickerFixed::getTickStep(const QCPRange &range)
 
 
 /* including file 'src/axis/axistickertext.cpp' */
-/* modified 2021-03-29T02:30:44, size 8742      */
+/* modified 2022-11-06T12:45:56, size 8742      */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPAxisTickerText
@@ -7399,7 +7403,7 @@ QVector<double> QCPAxisTickerText::createTickVector(double tickStep, const QCPRa
 
 
 /* including file 'src/axis/axistickerpi.cpp' */
-/* modified 2021-03-29T02:30:44, size 11177   */
+/* modified 2022-11-06T12:45:56, size 11177   */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPAxisTickerPi
@@ -7686,7 +7690,7 @@ QString QCPAxisTickerPi::unicodeSubscript(int number) const
 
 
 /* including file 'src/axis/axistickerlog.cpp' */
-/* modified 2021-03-29T02:30:44, size 7890     */
+/* modified 2022-11-06T12:45:56, size 7890     */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPAxisTickerLog
@@ -7827,7 +7831,7 @@ QVector<double> QCPAxisTickerLog::createTickVector(double tickStep, const QCPRan
 
 
 /* including file 'src/axis/axis.cpp'       */
-/* modified 2021-03-29T02:30:44, size 99883 */
+/* modified 2022-11-06T12:45:56, size 99911 */
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8072,12 +8076,12 @@ void QCPGrid::drawSubGridLines(QCPPainter *painter) const
   
   Axes are always part of an axis rect, see QCPAxisRect.
   \image html AxisNamesOverview.png
-  <centerWidget>Naming convention of axis parts</centerWidget>
+  <center>Naming convention of axis parts</center>
   \n
     
   \image html AxisRectSpacingOverview.png
-  <centerWidget>Overview of the spacings and paddings that define the geometry of an axis. The dashed gray line
-  on the left represents the QCustomPlot widget border.</centerWidget>
+  <center>Overview of the spacings and paddings that define the geometry of an axis. The dashed gray line
+  on the left represents the QCustomPlot widget border.</center>
   
   Each axis holds an instance of QCPAxisTicker which is used to generate the tick coordinates and
   tick labels. You can access the currently installed \ref ticker or set a new one (possibly one of
@@ -8480,7 +8484,7 @@ void QCPAxis::setRange(double lower, double upper)
   The \a position coordinate indicates together with the \a alignment parameter, where the new
   range will be positioned. \a size defines the size of the new axis range. \a alignment may be
   Qt::AlignLeft, Qt::AlignRight or Qt::AlignCenter. This will cause the left border, right border,
-  or centerWidget of the range to be aligned with \a position. Any other values of \a alignment will
+  or center of the range to be aligned with \a position. Any other values of \a alignment will
   default to Qt::AlignCenter.
 */
 void QCPAxis::setRange(double position, double size, Qt::AlignmentFlag alignment)
@@ -9125,13 +9129,13 @@ void QCPAxis::moveRange(double diff)
 }
 
 /*!
-  Scales the range of this axis by \a factor around the centerWidget of the current axis range. For
+  Scales the range of this axis by \a factor around the center of the current axis range. For
   example, if \a factor is 2.0, then the axis range will double its size, and the point at the axis
-  range centerWidget won't have changed its position in the QCustomPlot widget (i.e. coordinates around
-  the centerWidget will have moved symmetrically closer).
+  range center won't have changed its position in the QCustomPlot widget (i.e. coordinates around
+  the center will have moved symmetrically closer).
 
-  If you wish to scale around a different coordinate than the current axis range centerWidget, use the
-  overload \ref scaleRange(double factor, double centerWidget).
+  If you wish to scale around a different coordinate than the current axis range center, use the
+  overload \ref scaleRange(double factor, double center).
 */
 void QCPAxis::scaleRange(double factor)
 {
@@ -9140,8 +9144,8 @@ void QCPAxis::scaleRange(double factor)
 
 /*! \overload
 
-  Scales the range of this axis by \a factor around the coordinate \a centerWidget. For example, if \a
-  factor is 2.0, \a centerWidget is 1.0, then the axis range will double its size, and the point at
+  Scales the range of this axis by \a factor around the coordinate \a center. For example, if \a
+  factor is 2.0, \a center is 1.0, then the axis range will double its size, and the point at
   coordinate 1.0 won't have changed its position in the QCustomPlot widget (i.e. coordinates
   around 1.0 will have moved symmetrically closer to 1.0).
 
@@ -9159,7 +9163,7 @@ void QCPAxis::scaleRange(double factor, double center)
       mRange = newRange.sanitizedForLinScale();
   } else // mScaleType == stLogarithmic
   {
-    if ((mRange.upper < 0 && center < 0) || (mRange.upper > 0 && center > 0)) // make sure centerWidget has same sign as range
+    if ((mRange.upper < 0 && center < 0) || (mRange.upper > 0 && center > 0)) // make sure center has same sign as range
     {
       QCPRange newRange;
       newRange.lower = qPow(mRange.lower/center, factor)*center;
@@ -9175,7 +9179,7 @@ void QCPAxis::scaleRange(double factor, double center)
 
 /*!
   Scales the range of this axis to have a certain scale \a ratio to \a otherAxis. The scaling will
-  be done around the centerWidget of the current axis range.
+  be done around the center of the current axis range.
 
   For example, if \a ratio is 1, this axis is the \a yAxis and \a otherAxis is \a xAxis, graphs
   plotted with those axes will appear in a 1:1 aspect ratio, independent of the aspect ratio the
@@ -9238,7 +9242,7 @@ void QCPAxis::rescale(bool onlyVisiblePlottables)
   }
   if (haveRange)
   {
-    if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least centerWidget the plottable
+    if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least center the plottable
     {
       double center = (newRange.lower+newRange.upper)*0.5; // upper and lower should be equal anyway, but just to make sure, incase validRange returned false for other reason
       if (mScaleType == stLinear)
@@ -10348,7 +10352,7 @@ QCPAxisPainterPrivate::TickLabelData QCPAxisPainterPrivate::getTickLabelData(con
   int eLast = -1; // last index of exponent part, rest of text after this will be suffixPart
   if (substituteExponent)
   {
-    ePos = text.indexOf(QLatin1Char('e'));
+    ePos = text.indexOf(QString(mParentPlot->locale().exponential()));
     if (ePos > 0 && text.at(ePos-1).isDigit())
     {
       eLast = ePos;
@@ -10545,7 +10549,7 @@ void QCPAxisPainterPrivate::getMaxTickLabelSize(const QFont &font, const QString
 
 
 /* including file 'src/scatterstyle.cpp'    */
-/* modified 2021-03-29T02:30:44, size 17466 */
+/* modified 2022-11-06T12:45:56, size 17466 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPScatterStyle
@@ -11018,7 +11022,7 @@ void QCPScatterStyle::drawShape(QCPPainter *painter, double x, double y) const
 
 
 /* including file 'src/plottable.cpp'       */
-/* modified 2021-03-29T02:30:44, size 38818 */
+/* modified 2022-11-06T12:45:56, size 38818 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPSelectionDecorator
@@ -11729,7 +11733,7 @@ void QCPAbstractPlottable::rescaleKeyAxis(bool onlyEnlarge) const
   {
     if (onlyEnlarge)
       newRange.expand(keyAxis->range());
-    if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least centerWidget the plottable
+    if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least center the plottable
     {
       double center = (newRange.lower+newRange.upper)*0.5; // upper and lower should be equal anyway, but just to make sure, incase validRange returned false for other reason
       if (keyAxis->scaleType() == QCPAxis::stLinear)
@@ -11772,7 +11776,7 @@ void QCPAbstractPlottable::rescaleValueAxis(bool onlyEnlarge, bool inKeyRange) c
   {
     if (onlyEnlarge)
       newRange.expand(valueAxis->range());
-    if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least centerWidget the plottable
+    if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least center the plottable
     {
       double center = (newRange.lower+newRange.upper)*0.5; // upper and lower should be equal anyway, but just to make sure, incase validRange returned false for other reason
       if (valueAxis->scaleType() == QCPAxis::stLinear)
@@ -11989,7 +11993,7 @@ void QCPAbstractPlottable::deselectEvent(bool *selectionStateChanged)
 
 
 /* including file 'src/item.cpp'            */
-/* modified 2021-03-29T02:30:44, size 49486 */
+/* modified 2022-11-06T12:45:56, size 49486 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPItemAnchor
@@ -13261,7 +13265,7 @@ QCP::Interaction QCPAbstractItem::selectionCategory() const
 
 
 /* including file 'src/core.cpp'             */
-/* modified 2021-03-29T02:30:44, size 127198 */
+/* modified 2022-11-06T12:45:56, size 127625 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCustomPlot
@@ -13273,7 +13277,7 @@ QCP::Interaction QCPAbstractItem::selectionCategory() const
   interacts with the user.
   
   For tutorials on how to use QCustomPlot, see the website\n
-  http://www.qcustomplot.com/
+  https://www.qcustomplot.com/
 */
 
 /* start of documentation of inline functions */
@@ -13597,7 +13601,7 @@ QCustomPlot::QCustomPlot(QWidget *parent) :
   xAxis2(nullptr),
   yAxis2(nullptr),
   legend(nullptr),
-  mBufferDevicePixelRatio(1.0), // will be adapted to primary screen below
+  mBufferDevicePixelRatio(1.0), // will be adapted to true value below
   mPlotLayout(nullptr),
   mAutoAddPlottableToLegend(true),
   mAntialiasedElements(QCP::aeNone),
@@ -13626,7 +13630,6 @@ QCustomPlot::QCustomPlot(QWidget *parent) :
   mOpenGlCacheLabelsBackup(true)
 {
   setAttribute(Qt::WA_NoMousePropagation);
-  setAttribute(Qt::WA_OpaquePaintEvent);
   setFocusPolicy(Qt::ClickFocus);
   setMouseTracking(true);
   QLocale currentLocale = locale();
@@ -15466,6 +15469,22 @@ QSize QCustomPlot::sizeHint() const
 void QCustomPlot::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event)
+  
+  // detect if the device pixel ratio has changed (e.g. moving window between different DPI screens), and adapt buffers if necessary:
+#ifdef QCP_DEVICEPIXELRATIO_SUPPORTED
+#  ifdef QCP_DEVICEPIXELRATIO_FLOAT
+  double newDpr = devicePixelRatioF();
+#  else
+  double newDpr = devicePixelRatio();
+#  endif
+  if (!qFuzzyCompare(mBufferDevicePixelRatio, newDpr))
+  {
+    setBufferDevicePixelRatio(newDpr);
+    replot(QCustomPlot::rpQueuedRefresh);
+    return;
+  }
+#endif
+  
   QCPPainter painter(this);
   if (painter.isActive())
   {
@@ -16480,7 +16499,7 @@ void QCustomPlot::toPainter(QCPPainter *painter, int width, int height)
 
 
 /* including file 'src/colorgradient.cpp'   */
-/* modified 2021-03-29T02:30:44, size 25278 */
+/* modified 2022-11-06T12:45:56, size 25408 */
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -16710,10 +16729,10 @@ void QCPColorGradient::colorize(const double *data, const QCPRange &range, QRgb 
     const double value = data[dataIndexFactor*i];
     if (skipNanCheck || !std::isnan(value))
     {
-      int index = int((!logarithmic ? value-range.lower : qLn(value/range.lower)) * posToIndexFactor);
+      qint64 index = qint64((!logarithmic ? value-range.lower : qLn(value/range.lower)) * posToIndexFactor);
       if (!mPeriodic)
       {
-        index = qBound(0, index, mLevelCount-1);
+        index = qBound(qint64(0), index, qint64(mLevelCount-1));
       } else
       {
         index %= mLevelCount;
@@ -16771,10 +16790,10 @@ void QCPColorGradient::colorize(const double *data, const unsigned char *alpha, 
     const double value = data[dataIndexFactor*i];
     if (skipNanCheck || !std::isnan(value))
     {
-      int index = int((!logarithmic ? value-range.lower : qLn(value/range.lower)) * posToIndexFactor);
+      qint64 index = qint64((!logarithmic ? value-range.lower : qLn(value/range.lower)) * posToIndexFactor);
       if (!mPeriodic)
       {
-        index = qBound(0, index, mLevelCount-1);
+        index = qBound(qint64(0), index, qint64(mLevelCount-1));
       } else
       {
         index %= mLevelCount;
@@ -17017,7 +17036,7 @@ void QCPColorGradient::updateColorBuffer()
     for (int i=0; i<mLevelCount; ++i)
     {
       double position = i*indexToPosFactor;
-      QMap<double, QColor>::const_iterator it = mColorStops.lowerBound(position);
+      QMap<double, QColor>::const_iterator it = const_cast<const QMap<double, QColor>*>(&mColorStops)->lowerBound(position); // force using the const lowerBound method
       if (it == mColorStops.constEnd()) // position is on or after last stop, use color of last stop
       {
         if (useAlpha)
@@ -17115,7 +17134,7 @@ void QCPColorGradient::updateColorBuffer()
 
 
 /* including file 'src/selectiondecorator-bracket.cpp' */
-/* modified 2021-03-29T02:30:44, size 12308            */
+/* modified 2022-11-06T12:45:56, size 12308            */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPSelectionDecoratorBracket
@@ -17238,7 +17257,7 @@ void QCPSelectionDecoratorBracket::setTangentAverage(int pointCount)
   
   The passed \a painter already contains all transformations that are necessary to position and
   rotate the bracket appropriately. Painting operations can be performed as if drawing upright
-  brackets on flat data with horizontal key axis, with (0, 0) being the centerWidget of the bracket.
+  brackets on flat data with horizontal key axis, with (0, 0) being the center of the bracket.
   
   If you wish to sublcass \ref QCPSelectionDecoratorBracket in order to provide custom bracket
   shapes (see \ref QCPSelectionDecoratorBracket::bsUserStyle), this is the method you should
@@ -17401,7 +17420,7 @@ QPointF QCPSelectionDecoratorBracket::getPixelCoordinates(const QCPPlottableInte
 
 
 /* including file 'src/layoutelements/layoutelement-axisrect.cpp' */
-/* modified 2021-03-29T02:30:44, size 47193                       */
+/* modified 2022-11-06T12:45:56, size 47193                       */
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -17441,8 +17460,8 @@ QPointF QCPSelectionDecoratorBracket::getPixelCoordinates(const QCPPlottableInte
   QCP::iRangeZoom.
   
   \image html AxisRectSpacingOverview.png
-  <centerWidget>Overview of the spacings and paddings that define the geometry of an axis. The dashed
-  line on the far left indicates the viewport/widget border.</centerWidget>
+  <center>Overview of the spacings and paddings that define the geometry of an axis. The dashed
+  line on the far left indicates the viewport/widget border.</center>
 */
 
 /* start documentation of inline functions */
@@ -17521,9 +17540,9 @@ QPointF QCPSelectionDecoratorBracket::getPixelCoordinates(const QCPPlottableInte
   here, so the returned value is with respect to the inner \ref rect.
 */
 
-/*! \fn QPoint QCPAxisRect::centerWidget() const
+/*! \fn QPoint QCPAxisRect::center() const
   
-  Returns the centerWidget of this axis rect in pixels. Margins are not taken into account here, so the
+  Returns the center of this axis rect in pixels. Margins are not taken into account here, so the
   returned value is with respect to the inner \ref rect.
 */
 
@@ -18628,7 +18647,7 @@ void QCPAxisRect::mouseReleaseEvent(QMouseEvent *event, const QPointF &startPos)
 /*! \internal
   
   Event handler for mouse wheel events. If rangeZoom is Qt::Horizontal, Qt::Vertical or both, the
-  ranges of the axes defined as rangeZoomHorzAxis and rangeZoomVertAxis are scaled. The centerWidget of
+  ranges of the axes defined as rangeZoomHorzAxis and rangeZoomVertAxis are scaled. The center of
   the scaling operation is the current cursor position inside the axis rect. The scaling factor is
   dependent on the mouse wheel delta (which direction the wheel was rotated) to provide a natural
   zooming feel. The Strength of the zoom can be controlled via \ref setRangeZoomFactor.
@@ -18686,7 +18705,7 @@ void QCPAxisRect::wheelEvent(QWheelEvent *event)
 
 
 /* including file 'src/layoutelements/layoutelement-legend.cpp' */
-/* modified 2021-03-29T02:30:44, size 31762                     */
+/* modified 2022-11-06T12:45:56, size 31762                     */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPAbstractLegendItem
@@ -18955,7 +18974,7 @@ void QCPPlottableLegendItem::draw(QCPPainter *painter)
   QSize iconSize = mParentLegend->iconSize();
   QRect textRect = painter->fontMetrics().boundingRect(0, 0, 0, iconSize.height(), Qt::TextDontClip, mPlottable->name());
   QRect iconRect(mRect.topLeft(), iconSize);
-  int textHeight = qMax(textRect.height(), iconSize.height());  // if text has smaller height than icon, centerWidget text vertically in icon height, else align tops
+  int textHeight = qMax(textRect.height(), iconSize.height());  // if text has smaller height than icon, center text vertically in icon height, else align tops
   painter->drawText(mRect.x()+iconSize.width()+mParentLegend->iconTextPadding(), mRect.y(), textRect.width(), textHeight, Qt::TextDontClip, mPlottable->name());
   // draw icon:
   painter->save();
@@ -19610,7 +19629,7 @@ void QCPLegend::parentPlotInitialized(QCustomPlot *parentPlot)
 
 
 /* including file 'src/layoutelements/layoutelement-textelement.cpp' */
-/* modified 2021-03-29T02:30:44, size 12925                          */
+/* modified 2022-11-06T12:45:56, size 12925                          */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPTextElement
@@ -20016,7 +20035,7 @@ QColor QCPTextElement::mainTextColor() const
 
 
 /* including file 'src/layoutelements/layoutelement-colorscale.cpp' */
-/* modified 2021-03-29T02:30:44, size 26531                         */
+/* modified 2022-11-06T12:45:56, size 26531                         */
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20426,7 +20445,7 @@ void QCPColorScale::rescaleDataRange(bool onlyVisibleMaps)
   }
   if (haveRange)
   {
-    if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this dimension), shift current range to at least centerWidget the data
+    if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this dimension), shift current range to at least center the data
     {
       double center = (newRange.lower+newRange.upper)*0.5; // upper and lower should be equal anyway, but just to make sure, incase validRange returned false for other reason
       if (mDataScaleType == QCPAxis::stLinear)
@@ -20700,7 +20719,7 @@ void QCPColorScaleAxisRectPrivate::axisSelectableChanged(QCPAxis::SelectablePart
 
 
 /* including file 'src/plottables/plottable-graph.cpp' */
-/* modified 2021-03-29T02:30:44, size 74518            */
+/* modified 2022-11-06T12:45:57, size 74926            */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPGraphData
@@ -21530,21 +21549,37 @@ QVector<QPointF> QCPGraph::dataToImpulseLines(const QVector<QCPGraphData> &data)
   {
     for (int i=0; i<data.size(); ++i)
     {
-      const double key = keyAxis->coordToPixel(data.at(i).key);
-      result[i*2+0].setX(valueAxis->coordToPixel(0));
-      result[i*2+0].setY(key);
-      result[i*2+1].setX(valueAxis->coordToPixel(data.at(i).value));
-      result[i*2+1].setY(key);
+      const QCPGraphData &current = data.at(i);
+      if (!qIsNaN(current.value))
+      {
+        const double key = keyAxis->coordToPixel(current.key);
+        result[i*2+0].setX(valueAxis->coordToPixel(0));
+        result[i*2+0].setY(key);
+        result[i*2+1].setX(valueAxis->coordToPixel(current.value));
+        result[i*2+1].setY(key);
+      } else
+      {
+        result[i*2+0] = QPointF(0, 0);
+        result[i*2+1] = QPointF(0, 0);
+      }
     }
   } else // key axis is horizontal
   {
     for (int i=0; i<data.size(); ++i)
     {
-      const double key = keyAxis->coordToPixel(data.at(i).key);
-      result[i*2+0].setX(key);
-      result[i*2+0].setY(valueAxis->coordToPixel(0));
-      result[i*2+1].setX(key);
-      result[i*2+1].setY(valueAxis->coordToPixel(data.at(i).value));
+      const QCPGraphData &current = data.at(i);
+      if (!qIsNaN(current.value))
+      {
+        const double key = keyAxis->coordToPixel(data.at(i).key);
+        result[i*2+0].setX(key);
+        result[i*2+0].setY(valueAxis->coordToPixel(0));
+        result[i*2+1].setX(key);
+        result[i*2+1].setY(valueAxis->coordToPixel(data.at(i).value));
+      } else
+      {
+        result[i*2+0] = QPointF(0, 0);
+        result[i*2+1] = QPointF(0, 0);
+      }
     }
   }
   return result;
@@ -22458,7 +22493,7 @@ int QCPGraph::findIndexBelowY(const QVector<QPointF> *data, double y) const
 
 
 /* including file 'src/plottables/plottable-curve.cpp' */
-/* modified 2021-03-29T02:30:44, size 63851            */
+/* modified 2022-11-06T12:45:56, size 63851            */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPCurveData
@@ -23222,7 +23257,7 @@ void QCPCurve::getScatters(QVector<QPointF> *scatters, const QCPDataRange &dataR
   The regions are enumerated from top to bottom (\a valueMin to \a valueMax) and left to right (\a
   keyMin to \a keyMax):
 
-  <table style="width:10em; text-align:centerWidget">
+  <table style="width:10em; text-align:center">
     <tr><td>1</td><td>4</td><td>7</td></tr>
     <tr><td>2</td><td style="border:1px solid black">5</td><td>8</td></tr>
     <tr><td>3</td><td>6</td><td>9</td></tr>
@@ -23916,7 +23951,7 @@ double QCPCurve::pointDistance(const QPointF &pixelPoint, QCPCurveDataContainer:
 
 
 /* including file 'src/plottables/plottable-bars.cpp' */
-/* modified 2021-03-29T02:30:44, size 43907           */
+/* modified 2022-11-06T12:45:56, size 43907           */
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -24171,14 +24206,14 @@ double QCPBarsGroup::keyPixelOffset(const QCPBars *bars, double keyCoord)
   int index = baseBars.indexOf(thisBase);
   if (index >= 0)
   {
-    if (baseBars.size() % 2 == 1 && index == (baseBars.size()-1)/2) // is centerWidget bar (int division on purpose)
+    if (baseBars.size() % 2 == 1 && index == (baseBars.size()-1)/2) // is center bar (int division on purpose)
     {
       return result;
     } else
     {
       double lowerPixelWidth, upperPixelWidth;
       int startIndex;
-      int dir = (index <= (baseBars.size()-1)/2) ? -1 : 1; // if bar is to lower keys of centerWidget, dir is negative
+      int dir = (index <= (baseBars.size()-1)/2) ? -1 : 1; // if bar is to lower keys of center, dir is negative
       if (baseBars.size() % 2 == 0) // even number of bars
       {
         startIndex = baseBars.size()/2 + (dir < 0 ? -1 : 0);
@@ -24187,10 +24222,10 @@ double QCPBarsGroup::keyPixelOffset(const QCPBars *bars, double keyCoord)
       {
         startIndex = (baseBars.size()-1)/2+dir;
         baseBars.at((baseBars.size()-1)/2)->getPixelWidth(keyCoord, lowerPixelWidth, upperPixelWidth);
-        result += qAbs(upperPixelWidth-lowerPixelWidth)*0.5; // half of centerWidget bar
-        result += getPixelSpacing(baseBars.at((baseBars.size()-1)/2), keyCoord); // centerWidget bar spacing
+        result += qAbs(upperPixelWidth-lowerPixelWidth)*0.5; // half of center bar
+        result += getPixelSpacing(baseBars.at((baseBars.size()-1)/2), keyCoord); // center bar spacing
       }
-      for (int i = startIndex; i != index; i += dir) // add widths and spacings of bars in between centerWidget and our bars
+      for (int i = startIndex; i != index; i += dir) // add widths and spacings of bars in between center and our bars
       {
         baseBars.at(i)->getPixelWidth(keyCoord, lowerPixelWidth, upperPixelWidth);
         result += qAbs(upperPixelWidth-lowerPixelWidth);
@@ -25092,7 +25127,7 @@ void QCPBars::connectBars(QCPBars *lower, QCPBars *upper)
 
 
 /* including file 'src/plottables/plottable-statisticalbox.cpp' */
-/* modified 2021-03-29T02:30:44, size 28951                     */
+/* modified 2022-11-06T12:45:57, size 28951                     */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPStatisticalBoxData
@@ -25754,7 +25789,7 @@ QVector<QLineF> QCPStatisticalBox::getWhiskerBarLines(QCPStatisticalBoxDataConta
 
 
 /* including file 'src/plottables/plottable-colormap.cpp' */
-/* modified 2021-03-29T02:30:44, size 48149               */
+/* modified 2022-11-06T12:45:56, size 48189               */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPColorMapData
@@ -26124,8 +26159,8 @@ void QCPColorMapData::recalculateDataBounds()
 {
   if (mKeySize > 0 && mValueSize > 0)
   {
-    double minHeight = mData[0];
-    double maxHeight = mData[0];
+    double minHeight = std::numeric_limits<double>::max();
+    double maxHeight = -std::numeric_limits<double>::max();
     const int dataCount = mValueSize*mKeySize;
     for (int i=0; i<dataCount; ++i)
     {
@@ -26168,8 +26203,7 @@ void QCPColorMapData::clearAlpha()
 void QCPColorMapData::fill(double z)
 {
   const int dataCount = mValueSize*mKeySize;
-  for (int i=0; i<dataCount; ++i)
-    mData[i] = z;
+  memset(mData, z, dataCount*sizeof(*mData));
   mDataBounds = QCPRange(z, z);
   mDataModified = true;
 }
@@ -26188,8 +26222,7 @@ void QCPColorMapData::fillAlpha(unsigned char alpha)
   if (mAlpha || createAlpha(false))
   {
     const int dataCount = mValueSize*mKeySize;
-    for (int i=0; i<dataCount; ++i)
-      mAlpha[i] = alpha;
+    memset(mAlpha, alpha, dataCount*sizeof(*mAlpha));
     mDataModified = true;
   }
 }
@@ -26887,7 +26920,7 @@ void QCPColorMap::drawLegendIcon(QCPPainter *painter, const QRectF &rect) const
 
 
 /* including file 'src/plottables/plottable-financial.cpp' */
-/* modified 2021-03-29T02:30:44, size 42914                */
+/* modified 2022-11-06T12:45:57, size 42914                */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPFinancialData
@@ -27849,7 +27882,7 @@ QRectF QCPFinancial::selectionHitBox(QCPFinancialDataContainer::const_iterator i
 
 
 /* including file 'src/plottables/plottable-errorbar.cpp' */
-/* modified 2021-03-29T02:30:44, size 37679               */
+/* modified 2022-11-06T12:45:56, size 37679               */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPErrorBarsData
@@ -27928,7 +27961,7 @@ QCPErrorBarsData::QCPErrorBarsData(double errorMinus, double errorPlus) :
 
   The appearance of the error bars is defined by the pen (\ref setPen), and the width of the
   whiskers (\ref setWhiskerWidth). Further, the error bar backbones may leave a gap around the data
-  point centerWidget to prevent that error bars are drawn too close to or even through scatter points.
+  point center to prevent that error bars are drawn too close to or even through scatter points.
   This gap size can be controlled via \ref setSymbolGap.
 */
 
@@ -28419,7 +28452,7 @@ QCPRange QCPErrorBars::getKeyRange(bool &foundRange, QCP::SignDomain inSignDomai
   {
     if (mErrorType == etValueError)
     {
-      // error bar doesn't extend in key dimension (except whisker but we ignore that here), so only use data point centerWidget
+      // error bar doesn't extend in key dimension (except whisker but we ignore that here), so only use data point center
       const double current = mDataPlottable->interface1D()->dataMainKey(int(it-mDataContainer->constBegin()));
       if (qIsNaN(current)) continue;
       if (inSignDomain == QCP::sdBoth || (inSignDomain == QCP::sdNegative && current < 0) || (inSignDomain == QCP::sdPositive && current > 0))
@@ -28530,7 +28563,7 @@ QCPRange QCPErrorBars::getValueRange(bool &foundRange, QCP::SignDomain inSignDom
       }
     } else // mErrorType == etKeyError
     {
-      // error bar doesn't extend in value dimension (except whisker but we ignore that here), so only use data point centerWidget
+      // error bar doesn't extend in value dimension (except whisker but we ignore that here), so only use data point center
       const double current = mDataPlottable->interface1D()->dataMainValue(int(it-mDataContainer->constBegin()));
       if (qIsNaN(current)) continue;
       if (inSignDomain == QCP::sdBoth || (inSignDomain == QCP::sdNegative && current < 0) || (inSignDomain == QCP::sdPositive && current > 0))
@@ -28817,7 +28850,7 @@ bool QCPErrorBars::rectIntersectsLine(const QRectF &pixelRect, const QLineF &lin
 
 
 /* including file 'src/items/item-straightline.cpp' */
-/* modified 2021-03-29T02:30:44, size 7596          */
+/* modified 2022-11-06T12:45:56, size 7596          */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPItemStraightLine
@@ -28998,7 +29031,7 @@ QPen QCPItemStraightLine::mainPen() const
 
 
 /* including file 'src/items/item-line.cpp' */
-/* modified 2021-03-29T02:30:44, size 8525  */
+/* modified 2022-11-06T12:45:56, size 8525  */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPItemLine
@@ -29229,7 +29262,7 @@ QPen QCPItemLine::mainPen() const
 
 
 /* including file 'src/items/item-curve.cpp' */
-/* modified 2021-03-29T02:30:44, size 7273   */
+/* modified 2022-11-06T12:45:56, size 7273   */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPItemCurve
@@ -29398,7 +29431,7 @@ QPen QCPItemCurve::mainPen() const
 
 
 /* including file 'src/items/item-rect.cpp' */
-/* modified 2021-03-29T02:30:44, size 6472  */
+/* modified 2022-11-06T12:45:56, size 6472  */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPItemRect
@@ -29555,7 +29588,7 @@ QBrush QCPItemRect::mainBrush() const
 
 
 /* including file 'src/items/item-text.cpp' */
-/* modified 2021-03-29T02:30:44, size 13335 */
+/* modified 2022-11-06T12:45:56, size 13335 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPItemText
@@ -29569,7 +29602,7 @@ QBrush QCPItemRect::mainBrush() const
   Its position is defined by the member \a position and the setting of \ref setPositionAlignment.
   The latter controls which part of the text rect shall be aligned with \a position.
   
-  The text alignment itself (i.e. left, centerWidget, right) can be controlled with \ref
+  The text alignment itself (i.e. left, center, right) can be controlled with \ref
   setTextAlignment.
   
   The text may be rotated around the \a position point with \ref setRotation.
@@ -29903,7 +29936,7 @@ QBrush QCPItemText::mainBrush() const
 
 
 /* including file 'src/items/item-ellipse.cpp' */
-/* modified 2021-03-29T02:30:44, size 7881     */
+/* modified 2022-11-06T12:45:56, size 7881     */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPItemEllipse
@@ -29935,7 +29968,7 @@ QCPItemEllipse::QCPItemEllipse(QCustomPlot *parentPlot) :
   bottom(createAnchor(QLatin1String("bottom"), aiBottom)),
   bottomLeftRim(createAnchor(QLatin1String("bottomLeftRim"), aiBottomLeftRim)),
   left(createAnchor(QLatin1String("left"), aiLeft)),
-  center(createAnchor(QLatin1String("centerWidget"), aiCenter))
+  center(createAnchor(QLatin1String("center"), aiCenter))
 {
   topLeft->setCoords(0, 1);
   bottomRight->setCoords(1, 0);
@@ -30092,7 +30125,7 @@ QBrush QCPItemEllipse::mainBrush() const
 
 
 /* including file 'src/items/item-pixmap.cpp' */
-/* modified 2021-03-29T02:30:44, size 10622   */
+/* modified 2022-11-06T12:45:56, size 10622   */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPItemPixmap
@@ -30362,7 +30395,7 @@ QPen QCPItemPixmap::mainPen() const
 
 
 /* including file 'src/items/item-tracer.cpp' */
-/* modified 2021-03-29T02:30:44, size 14645   */
+/* modified 2022-11-06T12:45:56, size 14645   */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPItemTracer
@@ -30732,7 +30765,7 @@ QBrush QCPItemTracer::mainBrush() const
 
 
 /* including file 'src/items/item-bracket.cpp' */
-/* modified 2021-03-29T02:30:44, size 10705    */
+/* modified 2022-11-06T12:45:56, size 10705    */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// QCPItemBracket
@@ -30751,10 +30784,10 @@ QBrush QCPItemTracer::mainBrush() const
   stretches away from the embraced span, can be controlled with \ref setLength.
   
   \image html QCPItemBracket-length.png
-  <centerWidget>Demonstrating the effect of different values for \ref setLength, for styles \ref
-  bsCalligraphic and \ref bsSquare. Anchors and positions are displayed for reference.</centerWidget>
+  <center>Demonstrating the effect of different values for \ref setLength, for styles \ref
+  bsCalligraphic and \ref bsSquare. Anchors and positions are displayed for reference.</center>
   
-  It provides an anchor \a centerWidget, to allow connection of other items, e.g. an arrow (QCPItemLine
+  It provides an anchor \a center, to allow connection of other items, e.g. an arrow (QCPItemLine
   or QCPItemCurve) or a text label (QCPItemText), to the bracket.
 */
 
@@ -30768,7 +30801,7 @@ QCPItemBracket::QCPItemBracket(QCustomPlot *parentPlot) :
   QCPAbstractItem(parentPlot),
   left(createPosition(QLatin1String("left"))),
   right(createPosition(QLatin1String("right"))),
-  center(createAnchor(QLatin1String("centerWidget"), aiCenter)),
+  center(createAnchor(QLatin1String("center"), aiCenter)),
   mLength(8),
   mStyle(bsCalligraphic)
 {
@@ -30812,8 +30845,8 @@ void QCPItemBracket::setSelectedPen(const QPen &pen)
   span of the bracket (i.e. perpendicular to the <i>left</i>-<i>right</i>-direction)
   
   \image html QCPItemBracket-length.png
-  <centerWidget>Demonstrating the effect of different values for \ref setLength, for styles \ref
-  bsCalligraphic and \ref bsSquare. Anchors and positions are displayed for reference.</centerWidget>
+  <center>Demonstrating the effect of different values for \ref setLength, for styles \ref
+  bsCalligraphic and \ref bsSquare. Anchors and positions are displayed for reference.</center>
 */
 void QCPItemBracket::setLength(double length)
 {
@@ -30973,7 +31006,7 @@ QPen QCPItemBracket::mainPen() const
 
 
 /* including file 'src/polar/radialaxis.cpp' */
-/* modified 2021-03-29T02:30:44, size 49415  */
+/* modified 2022-11-06T12:45:57, size 49415  */
 
 
 
@@ -31329,7 +31362,7 @@ void QCPPolarAxisRadial::setRange(double lower, double upper)
   The \a position coordinate indicates together with the \a alignment parameter, where the new
   range will be positioned. \a size defines the size of the new axis range. \a alignment may be
   Qt::AlignLeft, Qt::AlignRight or Qt::AlignCenter. This will cause the left border, right border,
-  or centerWidget of the range to be aligned with \a position. Any other values of \a alignment will
+  or center of the range to be aligned with \a position. Any other values of \a alignment will
   default to Qt::AlignCenter.
 */
 void QCPPolarAxisRadial::setRange(double position, double size, Qt::AlignmentFlag alignment)
@@ -31900,13 +31933,13 @@ void QCPPolarAxisRadial::moveRange(double diff)
 }
 
 /*!
-  Scales the range of this axis by \a factor around the centerWidget of the current axis range. For
+  Scales the range of this axis by \a factor around the center of the current axis range. For
   example, if \a factor is 2.0, then the axis range will double its size, and the point at the axis
-  range centerWidget won't have changed its position in the QCustomPlot widget (i.e. coordinates around
-  the centerWidget will have moved symmetrically closer).
+  range center won't have changed its position in the QCustomPlot widget (i.e. coordinates around
+  the center will have moved symmetrically closer).
 
-  If you wish to scale around a different coordinate than the current axis range centerWidget, use the
-  overload \ref scaleRange(double factor, double centerWidget).
+  If you wish to scale around a different coordinate than the current axis range center, use the
+  overload \ref scaleRange(double factor, double center).
 */
 void QCPPolarAxisRadial::scaleRange(double factor)
 {
@@ -31915,8 +31948,8 @@ void QCPPolarAxisRadial::scaleRange(double factor)
 
 /*! \overload
 
-  Scales the range of this axis by \a factor around the coordinate \a centerWidget. For example, if \a
-  factor is 2.0, \a centerWidget is 1.0, then the axis range will double its size, and the point at
+  Scales the range of this axis by \a factor around the coordinate \a center. For example, if \a
+  factor is 2.0, \a center is 1.0, then the axis range will double its size, and the point at
   coordinate 1.0 won't have changed its position in the QCustomPlot widget (i.e. coordinates
   around 1.0 will have moved symmetrically closer to 1.0).
 
@@ -31934,7 +31967,7 @@ void QCPPolarAxisRadial::scaleRange(double factor, double center)
       mRange = newRange.sanitizedForLinScale();
   } else // mScaleType == stLogarithmic
   {
-    if ((mRange.upper < 0 && center < 0) || (mRange.upper > 0 && center > 0)) // make sure centerWidget has same sign as range
+    if ((mRange.upper < 0 && center < 0) || (mRange.upper > 0 && center > 0)) // make sure center has same sign as range
     {
       QCPRange newRange;
       newRange.lower = qPow(mRange.lower/center, factor)*center;
@@ -31985,17 +32018,17 @@ void QCPPolarAxisRadial::rescale(bool onlyVisiblePlottables)
   }
   if (haveRange)
   {
-    if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least centerWidget the plottable
+    if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least center the plottable
     {
-      double centerWidget = (newRange.lower+newRange.upper)*0.5; // upper and lower should be equal anyway, but just to make sure, incase validRange returned false for other reason
+      double center = (newRange.lower+newRange.upper)*0.5; // upper and lower should be equal anyway, but just to make sure, incase validRange returned false for other reason
       if (mScaleType == stLinear)
       {
-        newRange.lower = centerWidget-mRange.size()/2.0;
-        newRange.upper = centerWidget+mRange.size()/2.0;
+        newRange.lower = center-mRange.size()/2.0;
+        newRange.upper = center+mRange.size()/2.0;
       } else // mScaleType == stLogarithmic
       {
-        newRange.lower = centerWidget/qSqrt(mRange.upper/mRange.lower);
-        newRange.upper = centerWidget*qSqrt(mRange.upper/mRange.lower);
+        newRange.lower = center/qSqrt(mRange.upper/mRange.lower);
+        newRange.upper = center*qSqrt(mRange.upper/mRange.lower);
       }
     }
     setRange(newRange);
@@ -32434,7 +32467,7 @@ QCP::Interaction QCPPolarAxisRadial::selectionCategory() const
 
 
 /* including file 'src/polar/layoutelement-angularaxis.cpp' */
-/* modified 2021-03-29T02:30:44, size 57266                 */
+/* modified 2022-11-06T12:45:57, size 57266                 */
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -32524,9 +32557,9 @@ QCP::Interaction QCPPolarAxisRadial::selectionCategory() const
   here, so the returned value is with respect to the inner \ref rect.
 */
 
-/*! \fn QPoint QCPPolarAxisAngular::centerWidget() const
+/*! \fn QPoint QCPPolarAxisAngular::center() const
   
-  Returns the centerWidget of this axis rect in pixels. Margins are not taken into account here, so the
+  Returns the center of this axis rect in pixels. Margins are not taken into account here, so the
   returned value is with respect to the inner \ref rect.
 */
 
@@ -32783,13 +32816,13 @@ void QCPPolarAxisAngular::moveRange(double diff)
 }
 
 /*!
-  Scales the range of this axis by \a factor around the centerWidget of the current axis range. For
+  Scales the range of this axis by \a factor around the center of the current axis range. For
   example, if \a factor is 2.0, then the axis range will double its size, and the point at the axis
-  range centerWidget won't have changed its position in the QCustomPlot widget (i.e. coordinates around
-  the centerWidget will have moved symmetrically closer).
+  range center won't have changed its position in the QCustomPlot widget (i.e. coordinates around
+  the center will have moved symmetrically closer).
 
-  If you wish to scale around a different coordinate than the current axis range centerWidget, use the
-  overload \ref scaleRange(double factor, double centerWidget).
+  If you wish to scale around a different coordinate than the current axis range center, use the
+  overload \ref scaleRange(double factor, double center).
 */
 void QCPPolarAxisAngular::scaleRange(double factor)
 {
@@ -32798,8 +32831,8 @@ void QCPPolarAxisAngular::scaleRange(double factor)
 
 /*! \overload
 
-  Scales the range of this axis by \a factor around the coordinate \a centerWidget. For example, if \a
-  factor is 2.0, \a centerWidget is 1.0, then the axis range will double its size, and the point at
+  Scales the range of this axis by \a factor around the coordinate \a center. For example, if \a
+  factor is 2.0, \a center is 1.0, then the axis range will double its size, and the point at
   coordinate 1.0 won't have changed its position in the QCustomPlot widget (i.e. coordinates
   around 1.0 will have moved symmetrically closer to 1.0).
 
@@ -32848,7 +32881,7 @@ void QCPPolarAxisAngular::rescale(bool onlyVisiblePlottables)
   }
   if (haveRange)
   {
-    if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least centerWidget the plottable
+    if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least center the plottable
     {
       double center = (newRange.lower+newRange.upper)*0.5; // upper and lower should be equal anyway, but just to make sure, incase validRange returned false for other reason
       newRange.lower = center-mRange.size()/2.0;
@@ -33263,7 +33296,7 @@ void QCPPolarAxisAngular::setRange(double lower, double upper)
   The \a position coordinate indicates together with the \a alignment parameter, where the new
   range will be positioned. \a size defines the size of the new axis range. \a alignment may be
   Qt::AlignLeft, Qt::AlignRight or Qt::AlignCenter. This will cause the left border, right border,
-  or centerWidget of the range to be aligned with \a position. Any other values of \a alignment will
+  or center of the range to be aligned with \a position. Any other values of \a alignment will
   default to Qt::AlignCenter.
 */
 void QCPPolarAxisAngular::setRange(double position, double size, Qt::AlignmentFlag alignment)
@@ -34049,7 +34082,7 @@ void QCPPolarAxisAngular::mouseReleaseEvent(QMouseEvent *event, const QPointF &s
 /*! \internal
   
   Event handler for mouse wheel events. If rangeZoom is Qt::Horizontal, Qt::Vertical or both, the
-  ranges of the axes defined as rangeZoomHorzAxis and rangeZoomVertAxis are scaled. The centerWidget of
+  ranges of the axes defined as rangeZoomHorzAxis and rangeZoomVertAxis are scaled. The center of
   the scaling operation is the current cursor position inside the axis rect. The scaling factor is
   dependent on the mouse wheel delta (which direction the wheel was rotated) to provide a natural
   zooming feel. The Strength of the zoom can be controlled via \ref setRangeZoomFactor.
@@ -34125,7 +34158,7 @@ bool QCPPolarAxisAngular::registerPolarGraph(QCPPolarGraph *graph)
 
 
 /* including file 'src/polar/polargrid.cpp' */
-/* modified 2021-03-29T02:30:44, size 7493  */
+/* modified 2022-11-06T12:45:57, size 7493  */
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34313,7 +34346,7 @@ void QCPPolarGrid::drawAngularGrid(QCPPainter *painter, const QPointF &center, d
 
 
 /* including file 'src/polar/polargraph.cpp' */
-/* modified 2021-03-29T02:30:44, size 44035  */
+/* modified 2022-11-06T12:45:57, size 44035  */
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34341,7 +34374,7 @@ void QCPPolarLegendItem::draw(QCPPainter *painter)
   QSizeF iconSize = mParentLegend->iconSize();
   QRectF textRect = painter->fontMetrics().boundingRect(0, 0, 0, iconSize.height(), Qt::TextDontClip, mPolarGraph->name());
   QRectF iconRect(mRect.topLeft(), iconSize);
-  int textHeight = qMax(textRect.height(), iconSize.height());  // if text has smaller height than icon, centerWidget text vertically in icon height, else align tops
+  int textHeight = qMax(textRect.height(), iconSize.height());  // if text has smaller height than icon, center text vertically in icon height, else align tops
   painter->drawText(mRect.x()+iconSize.width()+mParentLegend->iconTextPadding(), mRect.y(), textRect.width(), textHeight, Qt::TextDontClip, mPolarGraph->name());
   // draw icon:
   painter->save();
@@ -34782,7 +34815,7 @@ void QCPPolarGraph::rescaleKeyAxis(bool onlyEnlarge) const
   {
     if (onlyEnlarge)
       newRange.expand(keyAxis->range());
-    if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least centerWidget the plottable
+    if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least center the plottable
     {
       double center = (newRange.lower+newRange.upper)*0.5; // upper and lower should be equal anyway, but just to make sure, incase validRange returned false for other reason
       newRange.lower = center-keyAxis->range().size()/2.0;
@@ -34808,7 +34841,7 @@ void QCPPolarGraph::rescaleValueAxis(bool onlyEnlarge, bool inKeyRange) const
   {
     if (onlyEnlarge)
       newRange.expand(valueAxis->range());
-    if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least centerWidget the plottable
+    if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least center the plottable
     {
       double center = (newRange.lower+newRange.upper)*0.5; // upper and lower should be equal anyway, but just to make sure, incase validRange returned false for other reason
       if (valueAxis->scaleType() == QCPPolarAxisRadial::stLinear)

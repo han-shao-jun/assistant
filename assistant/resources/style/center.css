@@ -1,0 +1,386 @@
+* {
+    color: #DCDCDC;     /*字体颜色*/
+    font-size: 14px;
+    background-color: #1E1E1E; /*背景颜色*/
+}
+
+/*QCombobox主体*/
+QComboBox {
+    background-color: #4B4B4B; /*背景颜色*/
+    border-radius: 5px; /*圆角*/
+    height: 23px; /*高度*/
+}
+
+/*QCombobox主体无效*/
+QComboBox:disabled{
+    background-color: #5e2828;
+}
+
+/*QCombobox右侧按钮*/
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right; /*放于右方顶部*/
+    border: none; /*无边框*/
+    padding-right: 5px; /*与右侧距离*/
+}
+
+/*QCombobox右侧按钮的箭头图标*/
+QComboBox::down-arrow {
+    image: url(:/image/arrow_down.png); /*自定义图片填充*/
+    width: 12px; /*设置该图标的宽高*/
+    height: 12px;
+}
+
+/*QCombobox右侧按钮的箭头被按下后图标*/
+QComboBox::down-arrow:on {
+    image: url(:/image/arrow_up.png); /* 显示下拉箭头 */
+    width: 12px; /*设置该图标的宽高*/
+    height: 12px;
+}
+
+/* 下拉后，整个下拉窗体样式 */
+QComboBox QAbstractItemView {
+    color: #4B4B4B;
+    background-color: #FFFFFF;
+    border-radius: 5px; /* 圆角 */
+    outline: 1px solid gray; /* 选定项的虚框 */
+}
+
+/* 下拉后，整个下拉窗体每项的样式 */
+QComboBox QAbstractItemView::item {
+    height: 23px; /* 项的高度（设置pComboBox->setView(new QListView());后，该项才起作用） */
+}
+
+/* 下拉后，整个下拉窗体越过每项的样式 */
+QComboBox QAbstractItemView::item:hover {
+    color: #FFFFFF;
+    background-color: cornflowerblue; /* 整个下拉窗体越过每项的背景色 */
+}
+
+/* 下拉后，整个下拉窗体被选择的每项的样式 */
+QComboBox QAbstractItemView::item:selected {
+    color: #FFFFFF;
+    background-color: cornflowerblue;
+}
+
+/* 右侧垂直滚动条 */
+QAbstractScrollArea QScrollBar:vertical {
+    width: 10px;
+    background-color: #d0d2d4; /* 空白区域的背景色  灰色green */
+}
+
+/* 右侧垂直滚动条滑块*/
+QAbstractScrollArea QScrollBar::handle:vertical {
+    border-radius: 5px; /* 圆角 */
+    background: rgb(150, 143, 143); 
+}
+
+/* 右侧垂直滚动条滑块鼠标指针悬浮 */
+QAbstractScrollArea QScrollBar::handle:vertical:hover {
+    background: rgb(90, 91, 93); 
+}
+
+/* 提示小窗 */
+QToolTip {
+    border-radius: 5px; /* 圆角 */
+    color: #FFFFFF;
+    background: #4B4B4B;;
+    height: 25px;
+    font-size: 16px;
+}
+
+/*编辑栏，编辑框*/
+QLineEdit, QTextEdit, QPlainTextEdit{
+    border: 1px solid #242424;
+    border-radius: 5px;
+    padding: 2px;
+    background-color: #4B4B4B;
+    selection-background-color: cornflowerblue;
+    selection-color: #FFFFFF;
+    min-height: 15px;
+}
+
+/*QLineEdit主体无效*/
+QLineEdit:disabled{
+    background-color: #5e2828;
+}
+
+
+/*编辑栏，聚焦*/
+QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus {
+    border: 1px solid #00E1DB;
+}
+
+/*按钮*/
+QPushButton{
+    border-style:none;
+    border:1px solid #242424;
+    color:#DCDCDC;
+    padding: 2px;
+    min-height: 17px;
+    border-radius: 5px;
+    background: #4B4B4B;
+}
+
+/*按钮不可使用*/
+QPushButton:disabled{
+    background-color: #5e2828;
+}
+
+/*鼠标指针悬浮在按钮上*/
+QPushButton:hover{
+    color:#FFFFFF;
+    background-color:rgba(51,127,209,230);
+}
+
+/*工具按钮*/
+QToolButton
+{
+    border:none;
+    color:#DCDCDC;
+    background: #4B4B4B;
+}
+
+QToolButton:disabled{
+    color: rgb(80,80,80);
+}
+
+QToolButton:checked
+{
+    border:1px solid #607D8B;
+    color:rgb(73,169,238);
+    background-color:#546E7A;
+}
+
+QToolButton:hover
+{
+    color:#FFFFFF;
+    background-color:rgba(51,127,209,230);
+}
+
+QToolButton:pressed
+{
+    border:1px solid #607D8B;
+    color:rgb(73,169,238);
+    background-color:#546E7A;
+}
+
+QToolButton::menu-button
+{
+    background-color:transparent;
+}
+
+
+/*串口多条发送，按钮*/
+QStackedWidget#uartMultipleSend QPushButton{
+    border-style:none;
+    border:1px solid #242424;
+    color:#DCDCDC;
+    padding: 2px;
+    min-height: 20px;
+    border-radius: 5px;
+    background: #4B4B4B;
+}
+
+/*串口多条发送，按钮不可使用*/
+QStackedWidget#uartMultipleSend QPushButton:disabled{
+    background-color: #5e2828;
+}
+
+/*串口多条发送，鼠标指针悬浮在按钮上*/
+QStackedWidget#uartMultipleSend QPushButton:hover{
+    color:#FFFFFF;
+    background-color:rgba(51,127,209,230);
+}
+
+/*串口多条发送,编辑栏*/
+QStackedWidget#uartMultipleSend QLineEdit{
+    border: 1px solid #242424;
+    border-radius: 5px;
+    padding: 2px;
+    background-color: #4B4B4B;
+    selection-background-color: cornflowerblue;
+    selection-color: #FFFFFF;
+    min-height: 20px;
+}
+
+/*串口多条发送,编辑栏-聚焦*/
+QStackedWidget#uartMultipleSend QLineEdit:focus{
+    border: 1px solid #00E1DB;
+}
+
+/*状态栏*/
+QWidget#statusBar {
+    background:#93A4AA;
+    color: #0F2026
+}
+
+/*状态栏标签*/
+QWidget#statusBar QLabel
+{
+    background:#93A4AA;
+    color: #0F2026
+}
+
+/*状态栏清除按钮*/
+QPushButton#clearCounterBtn {
+    border: none;
+    color: #0F2026;
+    background-color: #E5F5FC;
+    border-radius: 5px;
+}
+
+/*菜单栏*/
+QWidget#menuBar {
+    background: #4B4B4B;
+    color: #0F2026
+}
+
+/**菜单栏按钮*!*/
+QWidget#menuBar QPushButton
+{
+    border: none;
+    border-radius: 0px;
+    color:#DCDCDC;
+    background:none;
+    min-height: 25px;
+}
+
+/*菜单栏按钮鼠标指针悬浮*/
+QWidget#menuBar QPushButton:hover
+{
+    border: none;
+    color:#FFFFFF;
+    background-color:rgba(51,127,209,230);
+}
+
+/*圆形按钮*/
+QRadioButton::indicator{
+    width:16px;
+    height:16px;
+}
+
+/*圆形按钮失效被按下*/
+QRadioButton::indicator::checked:disabled{
+    image:url(:/image/radio_button_on.png);
+}
+
+/*组合框*/
+.QGroupBox{
+    border:1px solid #3C3C3C;
+    border-radius:5px;
+    margin-top: 8px;    /*标题离框线距离*/
+}
+
+/*组合框标题*/
+.QGroupBox::title{
+    subcontrol-origin:margin;
+    subcontrol-position: top left;
+    left:10px;
+}
+
+/*设置TabWidget中QTabBar的样式*/
+QTabBar::tab{
+    background-color: #1D1D1D;
+    min-width: 8px;
+    padding: 3px;
+}
+
+/*设置TabWidget中QTabBar的tab被选中时的样式*/
+QTabBar::tab:selected{
+    color: #23A7F2;
+    border-top: 1px solid #23A7F2;
+}
+
+/*设置TabWidget中鼠标悬浮在QTabBar的tab上，但未选中该Tab的样式*/
+QTabBar::tab:hover:!selected {
+    background-color: cornflowerblue;
+}
+
+/*设置TabWidget的边框的样式*/
+QTabWidget::pane {
+    border: 1px solid rgba(108, 117, 125, 65);
+}
+
+/*tabelwidget*/
+QTableWidget{
+    color:#DCDCDC;
+    background:#444444;
+    border:1px solid #242424;
+    alternate-background-color:#525252;/*交错颜色*/
+    gridline-color:#242424;
+}
+
+/*选中item*/
+QTableWidget::item:selected{
+    color:#DCDCDC;
+    background:qlineargradient(spread:pad,x1:0,y1:0,x2:0,y2:1,stop:0 #484848,stop:1 #383838);
+}
+
+/*悬浮item*/
+QTableWidget::item:hover{
+    background:#5B5B5B;
+}
+
+/*表头*/
+QHeaderView::section{
+    text-align:center;
+    background:#5E5E5E;
+    color:#DCDCDC;
+    border:1px solid #242424;
+    border-left-width:0;
+}
+
+/*表右侧的滑条*/
+QScrollBar:vertical{
+    background:#484848;
+    padding:0px;
+    border-radius:6px;
+    max-width:12px;
+}
+
+/*滑块*/
+QScrollBar::handle:vertical{
+    background:#CCCCCC;
+}
+
+/*滑块悬浮，按下*/
+QScrollBar::handle:hover:vertical,QScrollBar::handle:pressed:vertical{
+    background:#A7A7A7;
+}
+
+/*滑块已经划过的区域*/
+QScrollBar::sub-page:vertical{
+    background:444444;
+}
+
+/*滑块还没有划过的区域*/
+QScrollBar::add-page:vertical{
+    background:5B5B5B;
+}
+
+/*页面下移的按钮*/
+QScrollBar::add-line:vertical{
+    background:none;
+}
+
+/*页面上移的按钮*/
+QScrollBar::sub-line:vertical{
+    background:none;
+}
+
+/*进度条*/
+QProgressBar {
+    border: 1px solid grey;
+    border-radius: 5px;
+    text-align: right;
+    color: rgb(229, 229, 229);
+    background-color: #4B4B4B;
+}
+
+/*进度条内部*/
+QProgressBar::chunk
+{
+    border-radius:5px;
+    background-color: #6eb994;
+}

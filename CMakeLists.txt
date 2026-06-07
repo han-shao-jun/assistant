@@ -1,99 +1,96 @@
 cmake_minimum_required(VERSION 3.22)
-project(assistant)
+project(assistant
+        VERSION 0.0.0.1
+        DESCRIPTION "is a embedded developer assistant"
+        LANGUAGES C CXX
+)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-if(CMAKE_BUILD_TYPE MATCHES "Release")
-    add_compile_definitions(QT_NO_DEBUG_OUTPUT)
-endif()
+set(CMAKE_PREFIX_PATH "C:\\Programs\\Qt\\6.7.3\\msvc2022_64_static")
 
-set(CMAKE_PREFIX_PATH "D:\\Programs\\Qt5\\5.12.12\\mingw73_64")
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 
-find_package(Qt5 COMPONENTS
-    Core
-    Gui
-    Widgets
-    Network
-    SerialPort
-    Charts
-    PrintSupport
-    Bluetooth
-    REQUIRED
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
+        Core
+        Gui
+        Widgets
+        Network
+        SerialPort
+        PrintSupport
+        Core5Compat
+        Bluetooth
 )
 
 include_directories(${PROJECT_NAME}/)
 include_directories(${PROJECT_NAME}/qcustomplot)
 
-file(GLOB lib "${PROJECT_NAME}/qcustomplot/*.*")
-add_library(qcustomplot SHARED ${lib})
-target_link_libraries(qcustomplot
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Widgets
-    Qt5::PrintSupport
-)
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
-file(GLOB SRC "${PROJECT_NAME}/*.c*")
-file(GLOB INC "${PROJECT_NAME}/*.h*")
-file(GLOB UI "${PROJECT_NAME}/*.ui")
-file(GLOB QRC "${PROJECT_NAME}/*.qrc")
-file(GLOB RC "${PROJECT_NAME}/*.rc")
+if(MSVC)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /manifest:no")
+    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /manifest:no")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /manifest:no")
+endif()
 
+
+macro(header_directories parent)
+    file(GLOB_RECURSE newList ${parent}/*.h)
+    set(dir_list "")
+    foreach (file_path ${newList})
+        get_filename_component(dir_path ${file_path} DIRECTORY)
+        set(dir_list ${dir_list} ${dir_path})
+    endforeach ()
+    list(REMOVE_DUPLICATES dir_list)
+
+    include_directories(${dir_list})
+endmacro()
+
+header_directories(assistant)
+
+file(GLOB_RECURSE SRC "${PROJECT_NAME}/*.c*")
+file(GLOB_RECURSE INC "${PROJECT_NAME}/*.h*")
+file(GLOB_RECURSE UI "${PROJECT_NAME}/*.ui")
+file(GLOB_RECURSE QRC "${PROJECT_NAME}/*.qrc")
+file(GLOB_RECURSE RC "${PROJECT_NAME}/*.rc")
 
 
 if(CMAKE_BUILD_TYPE MATCHES "Release")
+    #发布版除去黑窗口，无qDebu打印
+    add_compile_definitions(QT_NO_DEBUG_OUTPUT)
     add_executable(${PROJECT_NAME} WIN32 ${SRC} ${INC} ${UI} ${QRC} ${RC})
 else ()
+    #调试版保留黑窗口,有qDebug打印
     add_executable(${PROJECT_NAME} ${SRC} ${INC} ${UI} ${QRC} ${RC})
 endif()
 
-target_link_libraries(${PROJECT_NAME}
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Widgets
-    Qt5::Network
-    Qt5::SerialPort
-    Qt5::Charts
-    Qt5::Bluetooth
-    qcustomplot
+target_link_libraries(${PROJECT_NAME} PUBLIC
+        Qt${QT_VERSION_MAJOR}::Core
+        Qt${QT_VERSION_MAJOR}::Gui
+        Qt${QT_VERSION_MAJOR}::Widgets
+        Qt${QT_VERSION_MAJOR}::Network
+        Qt${QT_VERSION_MAJOR}::SerialPort
+        Qt${QT_VERSION_MAJOR}::PrintSupport
+        Qt${QT_VERSION_MAJOR}::Core5Compat
+        Qt${QT_VERSION_MAJOR}::Bluetooth
+        )
+
+# 自qt6.3起支持使用cmake生成安装动态库规则，生成安装规则
+qt_generate_deploy_app_script(
+        TARGET ${PROJECT_NAME}
+        OUTPUT_SCRIPT deploy_script
+        NO_UNSUPPORTED_PLATFORM_ERROR
 )
 
-if(WIN32)
-    set(DEBUG_SUFFIX)
+# 添加安装命令
+install(SCRIPT ${deploy_script})
 
-    if(CMAKE_BUILD_TYPE MATCHES "Debug")
-        set(DEBUG_SUFFIX "d")
-    endif()
-
-    set(QT_INSTALL_PATH "${CMAKE_PREFIX_PATH}")
-
-    if(NOT EXISTS "${QT_INSTALL_PATH}/bin")
-        set(QT_INSTALL_PATH "${QT_INSTALL_PATH}/..")
-
-        if(NOT EXISTS "${QT_INSTALL_PATH}/bin")
-            set(QT_INSTALL_PATH "${QT_INSTALL_PATH}/..")
-        endif()
-    endif()
-
-    if(EXISTS "${QT_INSTALL_PATH}/plugins/platforms/qwindows${DEBUG_SUFFIX}.dll")
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E make_directory
-            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/plugins/platforms/")
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy
-            "${QT_INSTALL_PATH}/plugins/platforms/qwindows${DEBUG_SUFFIX}.dll"
-            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/plugins/platforms/")
-    endif()
-
-    foreach(QT_LIB Core Gui Widgets Network SerialPort Charts PrintSupport Bluetooth)
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy
-            "${QT_INSTALL_PATH}/bin/Qt5${QT_LIB}${DEBUG_SUFFIX}.dll"
-            "$<TARGET_FILE_DIR:${PROJECT_NAME}>")
-    endforeach(QT_LIB)
-endif()
+# 添加安装命令
+install(TARGETS ${PROJECT_NAME}
+        DESTINATION bin
+)

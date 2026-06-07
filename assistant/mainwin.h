@@ -1,10 +1,10 @@
 #ifndef MAINWIN_H
 #define MAINWIN_H
 
-#include <QWidget>
 #include "tille.h"
-#include <QVBoxLayout>
 #include "widget.h"
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QWidget>
 
 class MainWin : public QWidget
 {
@@ -14,6 +14,7 @@ public:
     TilleBar *tilleBar;
     QVBoxLayout *layout;
     Widget *centerWidget;
+
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
@@ -21,10 +22,10 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
-    int getRegion(QPoint p);        //获取光标在窗口所在区域
-    void setCursorType(int region);  //根据传入的坐标，设置光标样式
+    int getRegion(QPoint p);        // 获取光标在窗口所在区域
+    void setCursorType(int region); // 根据传入的坐标，设置光标样式
     int curpos = 0;
-    QPoint plast;
+    QPointF plast;
     bool isleftpressed = false;
 };
 
