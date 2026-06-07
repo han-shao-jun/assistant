@@ -10,7 +10,11 @@
         <file>image/close.png</file>
         <file>image/radio_button_on.png</file>
         <file>image/logo.png</file>
+        <file>image/logo.ico</file>
+        <file>image/min.svg</file>
+        <file>image/max.svg</file>
+        <file>image/restore.svg</file>
+        <file>image/close.svg</file>
         <file>./style/center.css</file>
-        <file>./style/tille.css</file>
     </qresource>
 </RCC>

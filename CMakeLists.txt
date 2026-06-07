@@ -80,6 +80,11 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
         Qt${QT_VERSION_MAJOR}::Bluetooth
         )
 
+# Windows下需要的系统库 (DWM API，用于自定义标题栏)
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE dwmapi)
+endif()
+
 # 自qt6.3起支持使用cmake生成安装动态库规则，生成安装规则
 qt_generate_deploy_app_script(
         TARGET ${PROJECT_NAME}
