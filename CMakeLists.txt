@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 project(assistant
         VERSION 0.0.0.1
-        DESCRIPTION "is a embedded developer assistant"
+        DESCRIPTION "this is a embedded developer assistant"
         LANGUAGES C CXX
 )
 

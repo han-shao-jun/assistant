@@ -34,9 +34,8 @@ void MainWin::initUI()
     _titleBar->setBarHeight(36);
 
     // 设置图标和标题（沿用原 assistant 项目的品牌标识）
-    this->setWindowIcon(QIcon(":/image/logo.ico"));
-    this->setWindowTitle(QString::fromUtf8("多功能调试助手"));
-
+    _titleBar->setWindowIcon(QIcon(":/image/logo.ico"));
+    _titleBar->setTitle(QString::fromUtf8("多功能调试助手"));
     _titleBar->setupWindow(this);
 
     // 确保 TitleBar 可见并位于最上层

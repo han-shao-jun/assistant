@@ -74,16 +74,16 @@ void TitleBar::setupWindow(QWidget* targetWindow)
 
     if (!_targetWindow->windowIcon().isNull()) {
         _iconLabel->setPixmap(_targetWindow->windowIcon().pixmap(18, 18));
-    } else {
-        _iconLabel->setVisible(false);
+        _iconLabel->setVisible(true);
     }
 
     if (!_targetWindow->windowTitle().isEmpty()) {
         _titleLabel->setText(_targetWindow->windowTitle());
-    } else {
-        _titleLabel->setVisible(false);
+        _titleLabel->setVisible(true);
     }
 
+    // 在 TitleBar 下方留出空间
+    _targetWindow->setContentsMargins(0, _barHeight, 0, 0);
     // 监听标题变化
     connect(_targetWindow, &QWidget::windowTitleChanged, this, [this](const QString& title) {
         _titleLabel->setText(title);
@@ -97,17 +97,6 @@ void TitleBar::setupWindow(QWidget* targetWindow)
         Qt::WindowCloseButtonHint);
     _targetWindow->setAttribute(Qt::WA_Hover);
 #endif
-
-    // 在 TitleBar 下方留出空间
-    _targetWindow->setContentsMargins(0, _barHeight, 0, 0);
-
-    // 同步图标和标题
-    if (!_targetWindow->windowIcon().isNull()) {
-        _iconLabel->setPixmap(_targetWindow->windowIcon().pixmap(18, 18));
-    }
-    if (!_targetWindow->windowTitle().isEmpty()) {
-        _titleLabel->setText(_targetWindow->windowTitle());
-    }
 }
 
 void TitleBar::setTitle(const QString& title)
